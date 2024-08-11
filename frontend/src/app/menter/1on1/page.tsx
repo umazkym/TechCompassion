@@ -1,4 +1,4 @@
-"use client";  // この行を追加
+"use client";
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ const Page = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-8"> {/* min-h-screenを使用して、画面全体を占める */}
+    <div className="flex flex-col min-h-screen p-8">
       <div className='flex justify-between items-center'>
         <div className='text-4xl py-5'>1on1ミーティング</div>
         <div className='text-md'>作成日: 2024/1/1</div>
@@ -47,7 +47,7 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <div className="flex mb-[-1px]"> {/* マイナスのマージンを適用 */}
+      <div className="flex mb-[-1px]">
         <button
           className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${activeTab === 'tab1' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'}`}
           onClick={() => setActiveTab('tab1')}
@@ -70,7 +70,7 @@ const Page = () => {
           <Icon icon="carbon:save" className="ml-2 text-2xl" />
         </button>
       </div>
-      <div className="border border-[#555555] p-4 mt-[-1px] bg-white flex-1 overflow-y-auto"> {/* 高さを最大限に利用 */}
+      <div className="border border-[#555555] p-4 mt-[-1px] bg-white flex-1 overflow-y-auto">
         {
           activeTab === 'tab1' && <div className='text-lg'>あaaa</div>
         }
