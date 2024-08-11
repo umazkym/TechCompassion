@@ -18,7 +18,7 @@ const page = () => {
   };
 
   return (
-    <div>
+    <div className='p-8'>
       <div className='text-4xl py-5'>Home</div>
       <div className='bg-[#D9D9D9]'>
         <div className='pl-5 py-3 text-2xl text-black'>1on1スケジュールテーブル</div>
