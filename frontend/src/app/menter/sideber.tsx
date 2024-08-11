@@ -17,7 +17,11 @@ function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <div className="w-24 bg-[#D9D9D9] text-white min-h-screen p-4">
+        <div className={clsx(
+            "bg-[#D9D9D9] text-white min-h-screen p-4",
+            "w-16 sm:w-20 md:w-24 lg:w-32",  // 幅を画面サイズに応じて調整
+            "hidden sm:flex flex-col"  // 小さい画面では非表示、sm以上で表示
+        )}>
             <ul>
                 {navItems.map((item) => {
                     const isActive = pathname.startsWith(item.href);
@@ -27,15 +31,15 @@ function Sidebar() {
                                 <div className={clsx(
                                     "flex items-center justify-center rounded-full",
                                     isActive ? "bg-[#555555]" : "bg-white",
-                                    "w-16 h-16" // 固定の幅と高さを指定して円を保持
+                                    "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20"  // アイコンのサイズを画面サイズに応じて調整
                                 )}>
                                     <Icon
                                         icon={item.icon}
-                                        className="w-10 h-10" // アイコンのサイズを指定
-                                        style={{ color: isActive ? '#ffffff' : '#555555' }} // 非アクティブ時のアイコン色を変更
+                                        className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"  // アイコンのサイズを調整
+                                        style={{ color: isActive ? '#ffffff' : '#555555' }}  // 非アクティブ時のアイコン色を変更
                                     />
                                 </div>
-                                <div className="block text-center mt-2 text-black">{item.label}</div>
+                                <div className="block text-center mt-2 text-black text-xs sm:text-sm md:text-base">{item.label}</div>
                             </Link>
                         </li>
                     );

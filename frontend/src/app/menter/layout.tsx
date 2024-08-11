@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex">
         <Sidebar />
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-6 bg-white text-black font-bold">
           {children}
         </main>
       </body>
