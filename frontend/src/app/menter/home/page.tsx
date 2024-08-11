@@ -1,5 +1,6 @@
 import React from 'react';
 import UserDataCard from './components/1on1_schedule';
+import MatchingMentee from './components/matchingmentee';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -18,7 +19,7 @@ const page = () => {
 
   return (
     <div>
-      <div className='text-4xl'>Home</div>
+      <div className='text-4xl py-5'>Home</div>
       <div className='bg-[#D9D9D9]'>
         <div className='pl-5 py-3 text-2xl text-black'>1on1スケジュールテーブル</div>
         <div className='flex justify-between gap-x-8 px-24 py-10'>
@@ -32,14 +33,36 @@ const page = () => {
             advice={userData.advice}
           />
           <div className='rounded-3xl w-1/4 h-auto bg-gray-100 p-10 flex items-center justify-center text-gray-700 shadow-lg'>
-            <p>ここに追加してく</p>
+            <p>ここに追加してく１</p>
           </div>
           <div className='rounded-3xl w-1/4 h-auto bg-gray-100 p-10 flex items-center justify-center text-gray-700 shadow-lg'>
-            <p>ここに追加してく</p>
+            <p>ここに追加してく１</p>
           </div>
           <div className='rounded-3xl w-1/4 h-auto bg-gray-100 p-10 flex items-center justify-center text-gray-700 shadow-lg'>
-            <p>ここに追加してく</p>
+            <p>ここに追加してく１</p>
           </div>
+        </div>
+      </div>
+      <div className='text-4xl pt-10 pb-5'>マッチング済メンティー一覧</div>
+      <div className='flex justify-between px-24 pt-10'>
+        <MatchingMentee
+          imageSrc="/icon/DESIGN.png"
+          name="田中花子"
+        />
+        <div className='flex flex-col items-center justify-center'>
+          <p>ここに追加してく２</p>
+        </div>
+        <div className='flex flex-col items-center justify-center'>
+          <p>ここに追加してく２</p>
+        </div>
+        <div className='flex flex-col items-center justify-center'>
+          <p>ここに追加してく２</p>
+        </div>
+        <div className='flex flex-col items-center justify-center'>
+          <p>ここに追加してく２</p>
+        </div>
+        <div className='flex flex-col items-center justify-center'>
+          <p>ここに追加してく２</p>
         </div>
       </div>
     </div>

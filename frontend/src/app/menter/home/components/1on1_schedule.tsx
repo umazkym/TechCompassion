@@ -1,6 +1,9 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Confirm1on1 from './confirm_1on1';
 
 interface UserDataCardProps {
     date: string;
@@ -21,6 +24,17 @@ const UserDataCard: React.FC<UserDataCardProps> = ({
     response,
     advice,
 }) => {
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const handleConfirm = () => {
+        setShowConfirm(false);
+        // ここにページ遷移や1on1開始のロジックを追加
+    };
+
+    const handleCancel = () => {
+        setShowConfirm(false);
+    };
+
     return (
     <div className='rounded-3xl w-1/4 h-auto bg-white p-8 flex flex-col items-center text-black shadow-lg'>
         <div className="text-3xl mb-6">{date}</div>
@@ -50,9 +64,12 @@ const UserDataCard: React.FC<UserDataCardProps> = ({
         </div>
         </div>
         <div className='mt-auto w-full'>
-        <Link href="/page1" className='block bg-[#6C69FF] text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4'>
+        <button
+            onClick={() => setShowConfirm(true)}
+            className='block w-full bg-[#6C69FF] text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4'
+        >
             1on1を開始する
-        </Link>
+        </button>
         <Link href="/menter/score" className='block bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4'>
             過去のスコアを<br/>振り返る
         </Link>
@@ -60,6 +77,20 @@ const UserDataCard: React.FC<UserDataCardProps> = ({
             過去の1on1を<br/>振り返る
         </Link>
         </div>
+
+        {showConfirm && (
+        <Confirm1on1
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+            date={date}
+            imageSrc={imageSrc}
+            name={name}
+            experience={experience}
+            topic={topic}
+            response={response}
+            advice={advice}
+        />
+        )}
     </div>
     );
 };
