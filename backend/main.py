@@ -20,19 +20,6 @@ app = FastAPI()
 # Qiita  https://qiita.com/satto_sann/items/0e1f5dbbe62efc612a78
 # fastapi  https://fastapi.tiangolo.com/ja/tutorial/cors/
 
-# class TransactionItem(BaseModel):
-#     name: str
-#     quantity: int
-#     price: int
-#     totalprice: int
-
-# class TransactionRequest(BaseModel):
-#     emp_cd: Optional[int] = 9999999999
-#     store_cd: Optional[int] = 30
-#     pos_no: Optional[int] = 90
-#     total_amt: Optional[int] = 0
-#     transaction: List[TransactionItem]
-
 
 @app.get('/')
 def read_root():

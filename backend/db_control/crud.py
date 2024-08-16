@@ -31,7 +31,9 @@ def get_mentee_data(models, mentor_id):
                 df.loc[i, 'working_years'] = (int(today.strftime('%Y%m%d')) -int(df.loc[i, 'join_date'].strftime('%Y%m%d'))) //10000 + 1
 
             df = df[['id', 'name', 'age', 'gender', 'working_years']]
-            result_json = df.to_json(orient='records', force_ascii=False)
+            result_json = df.to_json(orient='records', force_ascii=False)  # orient='records'で、各行が個別のJSONオブジェクトとしてリストに格納されるように指定。force_ascii=Falseで、非ASCII文字（日本語など）をそのまま使用。
+            result_json = json.loads(result_json)  # json形式にパース
+
     except sqlalchemy.exc.IntegrityError:
         print("一意制約違反により、挿入に失敗しました")
         result_json = None
@@ -57,14 +59,20 @@ def get_mentoring_data(models, mentor_id):
 
             df['mentoring_id'] =df['id_1']
 
+            df['age'] = None
+            for i in range(len(df)):
+                df.loc[i, 'age'] = (int(today.strftime('%Y%m%d')) -int(df.loc[i, 'birth_date'].strftime('%Y%m%d'))) //10000
+
             df['working_years'] = None
             for i in range(len(df)):
                 df.loc[i, 'working_years'] = (int(today.strftime('%Y%m%d')) -int(df.loc[i, 'join_date'].strftime('%Y%m%d'))) //10000 + 1
-            
+
             df = df[['id', 'name', 'age', 'gender', 'working_years',
                      'mentoring_id', 'mtg_date', 'mtg_start_time', 'request_to_mentor_for_attitude', 'request_to_mentor_for_content', 'advise_to_mentor_for_mtg']]
             df = df.sort_values('mtg_date', ascending=True)
             result_json = df.to_json(orient='records', force_ascii=False)
+            result_json = json.loads(result_json)
+
     except sqlalchemy.exc.IntegrityError:
         print("一意制約違反により、挿入に失敗しました")
         result_json = None
@@ -94,6 +102,8 @@ def get_feedback_data(models, mentor_id, FB_flg):
             df = df[['mentor_id', 'name', 'mentoring_id', 'mtg_date',
                      'listening_score', 'questioning_score', 'feedbacking_score', 'empathizing_score', 'coaching_score', 'teaching_score', 'analyzing_score', 'inspiration_score', 'vision_score', 'total_score', 'mentee_feedback_flg']]
             result_json = df.to_json(orient='records', force_ascii=False)
+            result_json = json.loads(result_json)
+
     except sqlalchemy.exc.IntegrityError:
         print("一意制約違反により、挿入に失敗しました")
         result_json = None
