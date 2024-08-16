@@ -76,6 +76,7 @@ class Feedback(Base):
     questioning_score :Mapped[int]
     feedbacking_score :Mapped[int]
     empathizing_score :Mapped[int]
+    motivating_score :Mapped[int]
     coaching_score :Mapped[int]
     teaching_score :Mapped[int]
     analyzing_score :Mapped[int]
