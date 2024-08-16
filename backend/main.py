@@ -3,20 +3,21 @@
 from fastapi import FastAPI
 from db_control import crud
 from db_control.dbmodels import MenteeMaster, UserData, Mentoring, MentorMaster, Feedback
-# from fastapi.middleware.cors import CORSMiddleware
-# from typing import Optional, List, Dict, Any
-# import datetime
-# from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+origins = [
+    'http://localhost:3000'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['GET', 'PUT'],
+    allow_headers=['*'],
+)
 # Qiita  https://qiita.com/satto_sann/items/0e1f5dbbe62efc612a78
 # fastapi  https://fastapi.tiangolo.com/ja/tutorial/cors/
 
