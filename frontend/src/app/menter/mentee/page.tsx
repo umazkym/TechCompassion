@@ -94,7 +94,7 @@ const Page = () => {
                       <p className="text-lg">一緒に考えてほしい</p>
                     </div>
                     <div className="flex items-center justify-center">
-                      <div className="w-80 pt-4 text-center">ワンポイントアドバイス</div>
+                      <div className="w-80 pt-4 text-center">1ポイントアドバイス</div>
                     </div>
                     <p className="text-lg text-center">
                       前回はメンター主体で会話が進んだようです。メンティーが話したい内容を伝えやすい環境を作り、
@@ -133,7 +133,7 @@ const Page = () => {
                       <p className="text-lg">一緒に考えてほしい</p>
                     </div>
                     <div className="flex items-center justify-center">
-                      <div className="w-80 pt-4 text-center">ワンポイントアドバイス</div>
+                      <div className="w-80 pt-4 text-center">1ポイントアドバイス</div>
                     </div>
                     <p className="text-lg text-center">
                       前回はメンター主体で会話が進んだようです。メンティーが話したい内容を伝えやすい環境を作り、

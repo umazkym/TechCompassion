@@ -36,7 +36,7 @@ const Page = () => {
         <div className='w-full md:w-3/5'>
           <div className='flex items-center h-full'>
             <div className='bg-[#6C69FF] w-80 py-2 rounded-2xl text-center text-white'>
-              <div>ワンポイント</div>
+              <div>1ポイント</div>
               <div>アドバイス</div>
             </div>
             <div className='ml-5 text-lg'>
@@ -110,6 +110,14 @@ const Page = () => {
             </div>
           )
         }
+      </div>
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleEndSession}
+          className="bg-[#F24822] text-white py-2 px-6 rounded-lg shadow-lg"
+        >
+          1on1を終了する
+        </button>
       </div>
     </div>
   );
