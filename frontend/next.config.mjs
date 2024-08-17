@@ -1,4 +1,9 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+import dotenv from 'dotenv';
+dotenv.config();
 
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    env: {
+        API_ENDPOINT: process.env.API_ENDPOINT,
+      }
+}

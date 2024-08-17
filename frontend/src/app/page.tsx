@@ -1,3 +1,40 @@
+// front-back接続確認用
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import fetchData from "./fetchData";
+
+export default function Home() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    async function getData() {
+      const result = await fetchData();
+      setData(result);
+    }
+    getData();
+  }, []);
+
+  if (!data) return <h3>Loading...</h3>;
+
+  return (
+    <div>
+      {data.map(item => (
+        <div key={item.id}>
+          <p>ID: {item.id}</p>
+          <p>Name: {item.name}</p>
+          <p>Age: {item.age}</p>
+          <p>Gender: {item.gender}</p>
+          <p>Working Years: {item.working_years}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+
 // import Image from "next/image";
 
 // export default function Home() {
