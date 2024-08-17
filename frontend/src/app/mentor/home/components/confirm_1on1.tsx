@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+// 1on1開始確認ポップアップのプロパティを定義
 interface Confirm1on1Props {
   onConfirm: () => void;
   onCancel: () => void;
@@ -27,8 +28,10 @@ const Confirm1on1: React.FC<Confirm1on1Props> = ({
 }) => {
   const router = useRouter();
 
+  // 1on1開始時の処理
   const handleConfirm = () => {
-    router.push('/menter/1on1');
+    const queryString = `name=${encodeURIComponent(name)}&experience=${encodeURIComponent(experience)}&topic=${encodeURIComponent(topic)}&response=${encodeURIComponent(response)}&advice=${encodeURIComponent(advice)}`;
+    router.push(`/mentor/1on1?${queryString}`);
     onConfirm();
   };
 
@@ -36,7 +39,7 @@ const Confirm1on1: React.FC<Confirm1on1Props> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4">1on1を開始しますか？</h2>
-        <div className='text-center mb-4'>
+        <div className="text-center mb-4">
           <div className="text-3xl mb-2">{date}</div>
           <Image
             src={imageSrc}
@@ -47,14 +50,14 @@ const Confirm1on1: React.FC<Confirm1on1Props> = ({
           />
           <p className="text-xl">{name}</p>
           <p className="text-sm">{experience}</p>
-          <div className='my-4'>
-            <p className='text-lg font-semibold'>トピック</p>
+          <div className="my-4">
+            <p className="text-lg font-semibold">トピック</p>
             <p>{topic}</p>
-            <p className='text-lg font-semibold mt-2'>対応</p>
+            <p className="text-lg font-semibold mt-2">対応</p>
             <p>{response}</p>
           </div>
           <div>
-            <p className="text-lg font-semibold">AIによる一言アドバイス</p>
+            <p className="text-lg font-semibold">ワンポイントアドバイス</p>
             <p className="text-gray-600 text-sm">{advice}</p>
           </div>
         </div>

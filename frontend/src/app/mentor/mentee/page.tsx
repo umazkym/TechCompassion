@@ -5,19 +5,22 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+// メンティー詳細ページのコンポーネント
 const Page = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
+  // コンポーネントのマウント状態を管理
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // 1on1開始確認時の処理
   const handleConfirm = () => {
     setShowConfirm(false);
     if (isMounted) {
-      router.push('/menter/1on1');
+      router.push('/mentor/1on1');
     }
   };
 
@@ -104,10 +107,10 @@ const Page = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-center mt-4">
-                  <Link href="/menter/score" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4 w-full">
+                  <Link href="/mentor/score" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4 w-full">
                     過去のスコアを<br />振り返る
                   </Link>
-                  <Link href="/menter/history" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center w-full">
+                  <Link href="/mentor/history" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center w-full">
                     過去の1on1を<br />振り返る
                   </Link>
                 </div>

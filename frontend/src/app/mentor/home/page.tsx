@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import UserDataCard from './components/1on1_schedule';
 import MatchingMentee from './components/matchingmentee';
 
+// メンタリングデータの型を定義
 interface MentoringData {
     id: number;
     name: string;
@@ -19,11 +20,13 @@ interface MentoringData {
 }
 
 const Page: React.FC = () => {
+    // メンタリングスケジュールの状態を管理
     const [mentoringSchedules, setMentoringSchedules] = useState<MentoringData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [showPopup, setShowPopup] = useState(false);  // ポップアップの表示状態を管理
-    const itemsPerPage = 3;  // 一度に表示する最大数
+    const itemsPerPage = 3;  // 一度に表示するアイテムの数を設定
 
+    // ページ読み込み時にデータを取得
     useEffect(() => {
         const fetchMentoringSchedules = async () => {
             try {
@@ -31,52 +34,55 @@ const Page: React.FC = () => {
                 const data: MentoringData[] = await response.json();
                 setMentoringSchedules(data);
             } catch (error) {
-                console.error('Failed to fetch mentoring schedule data:', error);
+                console.error('メンタリングスケジュールデータの取得に失敗しました:', error);
             }
         };
 
         fetchMentoringSchedules();
     }, []);
 
+    // 次のページに進む
     const handleNextPage = () => {
         if ((currentPage + 1) * itemsPerPage < mentoringSchedules.length) {
             setCurrentPage(currentPage + 1);
         }
     };
 
+    // 前のページに戻る
     const handlePrevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
     };
 
+    // 現在のページに表示するアイテムを取得
     const currentItems = mentoringSchedules.slice(
         currentPage * itemsPerPage,
         currentPage * itemsPerPage + itemsPerPage
     );
 
-    // ポップアップが表示されている場合は、ページングボタンを非表示にするクラスを適用
+    // ポップアップが表示されている場合はページングボタンを非表示にする
     const pagingButtonClass = showPopup
-        ? 'opacity-0 pointer-events-none'  // 見えないようにするクラス
+        ? 'opacity-0 pointer-events-none'
         : 'opacity-100';
 
     return (
         <div className='p-8'>
             <div className='text-4xl py-5'>Home</div>
-            <div className='bg-[#D9D9D9]'>
+            <div className='bg-[#D9D9D9] rounded-lg shadow-md'>
                 <div className='pl-5 py-3 text-2xl text-black'>1on1スケジュールテーブル</div>
-                <div className='flex justify-between gap-x-8 px-24 py-10'>
+                <div className='flex flex-wrap justify-between gap-x-8 px-4 py-10'>
                     {currentItems.map(schedule => (
                         <UserDataCard
                             key={schedule.mentoring_id}
-                            date={new Date(schedule.mtg_date).toLocaleDateString('ja-JP')}  // 日付を表示
-                            imageSrc="/icon/DESIGN.png"  // 画像は流用
+                            date={new Date(schedule.mtg_date).toLocaleDateString('ja-JP')}
+                            imageSrc="/icon/DESIGN.png"
                             name={schedule.name}
                             experience={`入社${schedule.working_years}年目`}
                             topic={schedule.request_to_mentor_for_content}
                             response={schedule.request_to_mentor_for_attitude}
                             advice={schedule.advise_to_mentor_for_mtg}
-                            setShowPopup={setShowPopup}  // ポップアップの表示状態を管理する関数を渡す
+                            setShowPopup={setShowPopup}
                         />
                     ))}
                 </div>
@@ -98,7 +104,7 @@ const Page: React.FC = () => {
                 </div>
             </div>
             <div className='text-4xl pt-10 pb-5'>マッチング済メンティー一覧</div>
-            <MatchingMentee />  {/* 既存のMatchingMenteeコンポーネント */}
+            <MatchingMentee />
         </div>
     );
 };

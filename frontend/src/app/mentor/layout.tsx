@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex">
+      <body className="flex bg-gray-50">
         <Sidebar />
         <main className="flex-1 p-6 bg-white text-black font-bold">
           {children}
