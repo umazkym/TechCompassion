@@ -100,7 +100,7 @@ def get_feedback_data(models, mentor_id, FB_flg):
             df['mentoring_id'] = df['id_2']
             df['total_score'] = df['listening_score'] + df['questioning_score'] + df['feedbacking_score'] + df['empathizing_score'] + df['coaching_score'] + df['teaching_score'] + df['analyzing_score'] + df['inspiration_score'] + df['vision_score']
             df = df[['mentor_id', 'name', 'mentoring_id', 'mtg_date',
-                     'listening_score', 'questioning_score', 'feedbacking_score', 'empathizing_score', 'coaching_score', 'teaching_score', 'analyzing_score', 'inspiration_score', 'vision_score', 'total_score', 'mentee_feedback_flg']]
+                     'listening_score', 'questioning_score', 'feedbacking_score', 'empathizing_score', 'motivating_score', 'coaching_score', 'teaching_score', 'analyzing_score', 'inspiration_score', 'vision_score', 'total_score', 'mentee_feedback_flg']]
             result_json = df.to_json(orient='records', force_ascii=False)
             result_json = json.loads(result_json)
 
