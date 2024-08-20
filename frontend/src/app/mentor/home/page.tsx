@@ -1,10 +1,9 @@
-"use client";
+"use client";  // これを追加
 
 import React, { useEffect, useState } from 'react';
 import UserDataCard from './components/1on1_schedule';
 import MatchingMentee from './components/matchingmentee';
 
-// メンタリングデータの型を定義
 interface MentoringData {
     id: number;
     name: string;
@@ -12,7 +11,7 @@ interface MentoringData {
     gender: string;
     working_years: number;
     mentoring_id: number;
-    mtg_date: number;  // UNIXタイムスタンプ形式
+    mtg_date: number;
     mtg_start_time: string;
     request_to_mentor_for_attitude: string;
     request_to_mentor_for_content: string;
@@ -20,13 +19,11 @@ interface MentoringData {
 }
 
 const Page: React.FC = () => {
-    // メンタリングスケジュールの状態を管理
     const [mentoringSchedules, setMentoringSchedules] = useState<MentoringData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const [showPopup, setShowPopup] = useState(false);  // ポップアップの表示状態を管理
-    const itemsPerPage = 3;  // 一度に表示するアイテムの数を設定
+    const [showPopup, setShowPopup] = useState(false);
+    const itemsPerPage = 3;
 
-    // ページ読み込み時にデータを取得
     useEffect(() => {
         const fetchMentoringSchedules = async () => {
             try {
@@ -41,27 +38,23 @@ const Page: React.FC = () => {
         fetchMentoringSchedules();
     }, []);
 
-    // 次のページに進む
     const handleNextPage = () => {
         if ((currentPage + 1) * itemsPerPage < mentoringSchedules.length) {
             setCurrentPage(currentPage + 1);
         }
     };
 
-    // 前のページに戻る
     const handlePrevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
     };
 
-    // 現在のページに表示するアイテムを取得
     const currentItems = mentoringSchedules.slice(
         currentPage * itemsPerPage,
         currentPage * itemsPerPage + itemsPerPage
     );
 
-    // ポップアップが表示されている場合はページングボタンを非表示にする
     const pagingButtonClass = showPopup
         ? 'opacity-0 pointer-events-none'
         : 'opacity-100';
@@ -71,7 +64,7 @@ const Page: React.FC = () => {
             <div className='text-4xl py-5'>Home</div>
             <div className='bg-[#D9D9D9] rounded-lg shadow-md'>
                 <div className='pl-5 py-3 text-2xl text-black'>1on1スケジュールテーブル</div>
-                <div className='flex flex-wrap justify-between gap-x-8 px-4 py-10'>
+                <div className='flex flex-wrap justify-between gap-x-8 px-24 mx-24 py-10'>
                     {currentItems.map(schedule => (
                         <UserDataCard
                             key={schedule.mentoring_id}
@@ -82,6 +75,7 @@ const Page: React.FC = () => {
                             topic={schedule.request_to_mentor_for_content}
                             response={schedule.request_to_mentor_for_attitude}
                             advice={schedule.advise_to_mentor_for_mtg}
+                            mentoring_id={schedule.mentoring_id}
                             setShowPopup={setShowPopup}
                         />
                     ))}

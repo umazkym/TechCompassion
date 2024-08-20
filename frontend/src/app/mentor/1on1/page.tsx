@@ -1,13 +1,30 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
 
-// 1on1ページのコンポーネント
+// SpeechRecognition の型を定義
+interface ISpeechRecognition extends EventTarget {
+  start: () => void;
+  stop: () => void;
+  onresult: (event: any) => void;
+  onend: () => void;
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: ISpeechRecognition;
+    webkitSpeechRecognition: ISpeechRecognition;
+  }
+}
+
 const Page = () => {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const mentoring_id = searchParams.get('mentoring_id');
   const [activeTab, setActiveTab] = useState('tab1');
   const [memo, setMemo] = useState(''); // メモの状態を管理
   const [userInfo, setUserInfo] = useState({
@@ -18,26 +35,134 @@ const Page = () => {
     advice: '',
   });
   const [isRecording, setIsRecording] = useState(false); // 録音状態の管理
+  const [transcript, setTranscript] = useState(''); // 現在の発話の文字起こしを保存
+  const [finalTranscript, setFinalTranscript] = useState(''); // 完成した発話の文字起こしを保存
+  const [showPopup, setShowPopup] = useState(false); // ポップアップの表示管理
+  const [showButtons, setShowButtons] = useState(true); // ボタン表示の管理
+  const recognitionRef = useRef<ISpeechRecognition | null>(null); // SpeechRecognition API のインスタンスを保持
 
   // ページのURLパラメータからユーザー情報を取得
   useEffect(() => {
-    setUserInfo({
-      name: searchParams.get('name') || '',
-      experience: searchParams.get('experience') || '',
-      topic: searchParams.get('topic') || '',
-      response: searchParams.get('response') || '',
-      advice: searchParams.get('advice') || '',
-    });
-  }, [searchParams]);
+    if (mentoring_id) {
+      const fetchUserInfo = async () => {
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/mentoring/${mentoring_id}`);
+          const data = await response.json();
+          if (data && data.length > 0) {
+            const user = data[0];
+            setUserInfo({
+              name: user.name,
+              experience: `入社${user.working_years}年目`,
+              topic: user.request_to_mentor_for_content,
+              response: user.request_to_mentor_for_attitude,
+              advice: user.advise_to_mentor_for_mtg || '',
+            });
+          }
+        } catch (error) {
+          console.error('ユーザー情報の取得に失敗しました:', error);
+        }
+      };
 
-  // 1on1開始ボタン押下時の処理
-  const handleStartSession = () => {
-    setIsRecording(true); // 録音を開始
+      fetchUserInfo();
+    }
+  }, [mentoring_id]);
+
+  // SpeechRecognition API の設定
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.lang = 'ja-JP'; // 言語を日本語に設定
+      recognition.interimResults = true; // 中間結果も取得する
+
+      // 音声認識の結果を処理
+      recognition.onresult = (event: any) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            setFinalTranscript((prev) => prev + transcript + ' '); // 最終結果を保存
+          } else {
+            interimTranscript += transcript; // 中間結果を保存
+          }
+        }
+        setTranscript(interimTranscript); // 中間結果を表示
+      };
+
+      // 録音が終了したときの処理
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      // recognition インスタンスを ref に保持
+      recognitionRef.current = recognition;
+    }
+
+    // クリーンアップ関数: コンポーネントがアンマウントされたときに録音を停止
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
+
+  // 録音の開始
+  const handleStartRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
   };
 
-  // 1on1終了ボタン押下時の処理
-  const handleEndSession = () => {
-    router.push('/mentor/home');
+  // 録音の終了とAPI送信、ポップアップ表示
+  const handleEndRecording = async () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+
+      const data = {
+        id: mentoring_id,
+        mtg_content: finalTranscript + transcript,
+        mtg_memo: memo,
+      };
+
+      console.log("Sending data:", data); // 送信データを確認
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/mentoring/${mentoring_id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          throw new Error(`データの送信に失敗しました: ${errorMessage}`);
+        }
+
+        alert('データが送信されました');
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Error submitting data:', error);
+          alert(`データの送信に失敗しました: ${error.message}`);
+        } else {
+          console.error('Error submitting data:', error);
+          alert('データの送信に失敗しました');
+        }
+      }
+
+      setShowPopup(true);
+      setShowButtons(false);
+    }
+  };
+
+  // ポップアップを閉じる
+  const closePopup = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -69,21 +194,27 @@ const Page = () => {
       </div>
       <div className="flex mb-[-1px]">
         <button
-          className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${activeTab === 'tab1' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'}`}
+          className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${
+            activeTab === 'tab1' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'
+          }`}
           onClick={() => setActiveTab('tab1')}
         >
           対話履歴
           <Icon icon="ri:user-voice-fill" className="ml-2 text-2xl" />
         </button>
         <button
-          className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${activeTab === 'tab2' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'}`}
+          className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${
+            activeTab === 'tab2' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'
+          }`}
           onClick={() => setActiveTab('tab2')}
         >
           対話メモ
           <Icon icon="fluent-emoji-high-contrast:memo" className="ml-2 text-2xl" />
         </button>
         <button
-          className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${activeTab === 'tab3' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'}`}
+          className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${
+            activeTab === 'tab3' ? 'bg-[#555555] text-white' : 'bg-gray-200 text-gray-700'
+          }`}
           onClick={() => setActiveTab('tab3')}
         >
           前回のサマリー
@@ -92,18 +223,20 @@ const Page = () => {
       </div>
       <div className="border border-[#555555] p-4 mt-[-1px] bg-white flex-1 overflow-y-auto relative">
         {activeTab === 'tab1' && (
-          <div className="flex justify-center items-center h-full">
+          <div>
             {!isRecording ? (
-              <button
-                onClick={handleStartSession}
-                className="bg-[#6C69FF] text-white py-4 px-8 rounded-lg shadow-lg"
-              >
-                1on1を開始する
-              </button>
+              showButtons && (
+                <div className="flex justify-center items-center h-full">
+                  <button
+                    onClick={handleStartRecording}
+                    className="bg-[#6C69FF] text-white py-4 px-8 rounded-lg shadow-lg"
+                  >
+                    文字おこしを開始する
+                  </button>
+                </div>
+              )
             ) : (
-              <div className="text-red-600 font-bold text-2xl text-center">
-                録音が開始されます
-              </div>
+              <div className="text-lg">{finalTranscript + transcript}</div>
             )}
           </div>
         )}
@@ -142,14 +275,29 @@ const Page = () => {
           </div>
         )}
       </div>
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={handleEndSession}
-          className="bg-[#F24822] text-white py-2 px-6 rounded-lg shadow-lg"
-        >
-          1on1を終了する
-        </button>
-      </div>
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p className="mb-4">文字おこしが終了しました。</p>
+            <button
+              onClick={closePopup}
+              className="bg-blue-500 text-white py-2 px-4 rounded"
+            >
+              確認
+            </button>
+          </div>
+        </div>
+      )}
+      {showButtons && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleEndRecording}
+            className="bg-[#F24822] text-white py-2 px-6 rounded-lg shadow-lg"
+          >
+            文字おこしを終了する
+          </button>
+        </div>
+      )}
     </div>
   );
 };
