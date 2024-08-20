@@ -60,9 +60,11 @@ class Mentoring(Base):
     request_to_mentor_for_attitude :Mapped[str] = mapped_column(VARCHAR(100))
     request_to_mentor_for_content :Mapped[str] = mapped_column(VARCHAR(100))
     advise_to_mentor_for_mtg :Mapped[str] = mapped_column(VARCHAR(500))
-    mtg_content :Mapped[Optional[str]] = mapped_column(VARCHAR(65535))  # nullable=True
+    mtg_content :Mapped[Optional[str]] # nullable=True
     mtg_content_summary :Mapped[Optional[str]] = mapped_column(VARCHAR(500))  # nullable=True
-    mtg_memo :Mapped[Optional[str]] = mapped_column(VARCHAR(65535))  # nullable=True
+    mtg_memo :Mapped[Optional[str]] # nullable=True
+    mtg_content_speaker_identification :Mapped[Optional[str]] # nullable=True
+
 
     feedbacks :Mapped['Feedback'] = relationship(back_populates="mentoring")
     mentee :Mapped['MenteeMaster'] = relationship(back_populates="mentorings")

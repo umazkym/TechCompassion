@@ -35,25 +35,30 @@ def get_mentee_list(mentor_id: int):
 
 # メンタリングスケジュールリスト用
 @app.get("/mentor/{mentor_id}/mentoring_schedule")
-def get_mentor_skill_data(mentor_id: int):
+def get_mentoring_list(mentor_id: int):
     models = [MenteeMaster, UserData, Mentoring]
     result = crud.get_mentoring_data(models, mentor_id)
     return result
 
 # 1on1開始のAPI
-    # @app.get("/mentoring/{mentoring_id}/mentee/{mentee_id}")
-    # def read_mentoring_info(mentoring_id: int,):
-    #     model = 
-    #     result =
-    #     return
+@app.get("/mentoring/{mentoring_id}")
+def read_mentoring_info(mentoring_id: int):
+    models = [MenteeMaster, UserData, Mentoring]
+    result = crud.get_mentoring_info(models, mentoring_id)
+    return result
 
 # 1on1履歴保存のAPI
-    # @app.put("/mentoring/{mentoring_id}")
-    # def save_mentoring_data(mentoring_id: int,):
-    #     values = text
-    #     model =
-    #     result = {}
-    #     return result
+@app.put("/mentoring/{mentoring_id}")
+def save_mentoring_data(mentoring_id: int,):
+    values = {}
+    # values = {
+    #     "id": "1",
+    #     "mtg_content": "1111111111",
+    #     "mtg_memo": "111111111",
+    # }
+    models = [Mentoring, MenteeMaster]
+    result = crud.update_data(models, values)
+    return result
 
 # メンタースキルマップ
 @app.get("/mentor/{mentor_id}/skillmap/{FB_flg}")
