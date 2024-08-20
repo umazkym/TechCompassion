@@ -6,6 +6,7 @@ import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Title, 
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Title, Tooltip, Legend, CategoryScale, LinearScale);
 
+// スキルマップデータの型を定義
 interface SkillMapData {
     mentor_id: number;
     name: string;
@@ -29,28 +30,31 @@ const Page = () => {
     const [skillMapData, setSkillMapData] = useState<SkillMapData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
 
+    // ページ読み込み時にスキルマップデータを取得
     useEffect(() => {
         const fetchSkillMapData = async () => {
             try {
                 const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/1');
                 const data: SkillMapData[] = await response.json();
                 setSkillMapData(data);
+                setCurrentPage(data.length - 1);  // 最新データを表示するために設定
             } catch (error) {
-                console.error('Failed to fetch skill map data:', error);
+                console.error('スキルマップデータの取得に失敗しました:', error);
             }
         };
-
+    
         fetchSkillMapData();
     }, []);
 
     // 時系列のラベル（mtg_dateを使用）
     const labels = skillMapData.map(item => 
         new Date(item.mtg_date).toLocaleDateString('ja-JP')
-    );
+    ).reverse();  // データを逆転
 
     // 総スコアの時系列データ
-    const totalScores = skillMapData.map(item => item.total_score);
+    const totalScores = skillMapData.map(item => item.total_score).reverse();  // データを逆転
 
+    // 折れ線グラフのデータ設定
     const lineData = {
         labels: labels,
         datasets: [
@@ -59,16 +63,23 @@ const Page = () => {
                 data: totalScores,
                 borderColor: '#555555',
                 backgroundColor: '#6C69FF',
-                pointBackgroundColor: '#6C69FF',
+                pointBackgroundColor: totalScores.map((_, index) =>
+                    index === currentPage ? '#FF0000' : '#6C69FF' // 現在ページを赤色で強調
+                ),
                 pointBorderColor: '#FFFFFF',
                 borderWidth: 2,
-                pointRadius: 7,
-                pointHoverRadius: 9,
-                tension: 0,  // 曲線を無効にするためにtensionを0に設定
+                pointRadius: totalScores.map((_, index) =>
+                    index === currentPage ? 10 : 7 // 現在ページのプロットを拡大
+                ),
+                pointHoverRadius: totalScores.map((_, index) =>
+                    index === currentPage ? 12 : 9 // ホバー時のプロットを調整
+                ),
+                tension: 0,  // 曲線を無効に設定
             },
         ],
     };
-
+    
+    // レーダーチャート用のデータ設定
     const radarData = {
         labels: [
             '傾聴力', '質問力', 'FBスキル', '共感力',
@@ -79,10 +90,16 @@ const Page = () => {
             {
                 label: '主観的FB',
                 data: [
-                    skillMapData[currentPage].listening_score, skillMapData[currentPage].questioning_score, skillMapData[currentPage].feedbacking_score,
-                    skillMapData[currentPage].empathizing_score, skillMapData[currentPage].motivating_score, skillMapData[currentPage].coaching_score,
-                    skillMapData[currentPage].teaching_score, skillMapData[currentPage].analyzing_score, skillMapData[currentPage].inspiration_score,
-                    skillMapData[currentPage].vision_score
+                    skillMapData[skillMapData.length - 1 - currentPage].listening_score, 
+                    skillMapData[skillMapData.length - 1 - currentPage].questioning_score, 
+                    skillMapData[skillMapData.length - 1 - currentPage].feedbacking_score,
+                    skillMapData[skillMapData.length - 1 - currentPage].empathizing_score, 
+                    skillMapData[skillMapData.length - 1 - currentPage].motivating_score, 
+                    skillMapData[skillMapData.length - 1 - currentPage].coaching_score,
+                    skillMapData[skillMapData.length - 1 - currentPage].teaching_score, 
+                    skillMapData[skillMapData.length - 1 - currentPage].analyzing_score, 
+                    skillMapData[skillMapData.length - 1 - currentPage].inspiration_score,
+                    skillMapData[skillMapData.length - 1 - currentPage].vision_score
                 ],
                 borderColor: '#555555',
                 borderWidth: 2,
@@ -126,7 +143,7 @@ const Page = () => {
                     beginAtZero: true, // 0から始める
                     color: '#333',
                     font: {
-                        weight: 'bold' as const, // フォントの太さを指定
+                        weight: 'bold' as const,
                         size: 15,
                     },
                 },
@@ -138,7 +155,7 @@ const Page = () => {
                 },
                 pointLabels: {
                     font: {
-                        weight: 'bold' as const, // フォントの太さを指定
+                        weight: 'bold' as const,
                         size: 20,
                     },
                     color: (ctx: any) => {
@@ -216,6 +233,7 @@ const Page = () => {
         },
     };
 
+    // ページ移動時の処理
     const handleNextPage = () => {
         if (currentPage < skillMapData.length - 1) {
             setCurrentPage(currentPage + 1);
@@ -290,10 +308,7 @@ const Page = () => {
     />
 </div>
 
-{/* 名前表示部分と高さを合わせるための空白 */}
-<div className="m-12" style={{ height: '32px' }}>
-    {/* 空白部分を追加して名前の表示に対応 */}
-</div>
+<div className="m-12" style={{ height: '44px' }}></div>
 
 <div className="mt-8 h-96">
     <Radar

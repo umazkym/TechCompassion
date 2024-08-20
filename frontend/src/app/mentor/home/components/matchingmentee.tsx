@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
+// メンティーデータの型を定義
 interface MenteeData {
     id: number;
     name: string;
@@ -14,8 +15,9 @@ interface MenteeData {
 const MatchingMentee: React.FC = () => {
     const [mentees, setMentees] = useState<MenteeData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 4;  // 一度に表示する最大数は4人のまま
+    const itemsPerPage = 4;  // 一度に表示する最大数
 
+    // ページ読み込み時にメンティーデータを取得
     useEffect(() => {
         const fetchMentees = async () => {
             try {
@@ -23,25 +25,28 @@ const MatchingMentee: React.FC = () => {
                 const data: MenteeData[] = await response.json();
                 setMentees(data);
             } catch (error) {
-                console.error('Failed to fetch mentee data:', error);
+                console.error('メンティーデータの取得に失敗しました:', error);
             }
         };
 
         fetchMentees();
     }, []);
 
+    // 次のページに進む
     const handleNextPage = () => {
         if ((currentPage + 1) * itemsPerPage < mentees.length) {
             setCurrentPage(currentPage + 1);
         }
     };
 
+    // 前のページに戻る
     const handlePrevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
     };
 
+    // 現在のページに表示するアイテムを取得
     const currentItems = mentees.slice(
         currentPage * itemsPerPage,
         currentPage * itemsPerPage + itemsPerPage
@@ -53,11 +58,11 @@ const MatchingMentee: React.FC = () => {
                 {currentItems.map(mentee => (
                     <div key={mentee.id} className='flex flex-col items-center justify-center'>
                         <Image
-                            src="/icon/DESIGN.png"  // 画像はすべて同じで構わないため、固定のパスを指定
+                            src="/icon/DESIGN.png"
                             alt={mentee.name}
                             width={150}
                             height={150}
-                            className="rounded-full bg-white mb-2 border-gray-400 border-4"
+                            className='rounded-full bg-white mb-2 border-gray-400 border-4'
                         />
                         <p>{mentee.name}</p>
                     </div>
