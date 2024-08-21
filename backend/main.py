@@ -1,6 +1,6 @@
 # API一覧
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from db_control import crud
 from db_control.dbmodels import MenteeMaster, UserData, Mentoring, MentorMaster, Feedback
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,22 +42,21 @@ def get_mentoring_list(mentor_id: int):
 
 # 1on1開始のAPI
 @app.get("/mentoring/{mentoring_id}")
-def read_mentoring_info(mentoring_id: int):
+def get_mentoring_info(mentoring_id: int):
     models = [MenteeMaster, UserData, Mentoring]
-    result = crud.get_mentoring_info(models, mentoring_id)
+    result = crud.get_mentoring_details(models, mentoring_id)
     return result
 
 # 1on1履歴保存のAPI
 @app.put("/mentoring/{mentoring_id}")
-def save_mentoring_data(mentoring_id: int,):
-    values = {}
-    # values = {
-    #     "id": "1",
-    #     "mtg_content": "1111111111",
-    #     "mtg_memo": "111111111",
+async def save_mentoring_datas(mentoring_id: int, request: Request):
+    datas = await request.json()
+    # datas = {
+    #     "mtg_content": "11111",
+    #     "mtg_memo": "1111",
     # }
     models = [Mentoring, MenteeMaster]
-    result = crud.update_data(models, values)
+    result = crud.update_data(models, datas)
     return result
 
 # メンタースキルマップ
