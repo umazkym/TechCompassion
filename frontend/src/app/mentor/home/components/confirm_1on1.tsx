@@ -2,7 +2,6 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-// 1on1開始確認ポップアップのプロパティを定義
 interface Confirm1on1Props {
   onConfirm: () => void;
   onCancel: () => void;
@@ -13,6 +12,7 @@ interface Confirm1on1Props {
   topic: string;
   response: string;
   advice: string;
+  mentoring_id: number; // mentoring_idを追加
 }
 
 const Confirm1on1: React.FC<Confirm1on1Props> = ({
@@ -25,13 +25,12 @@ const Confirm1on1: React.FC<Confirm1on1Props> = ({
   topic,
   response,
   advice,
+  mentoring_id, // mentoring_idを受け取る
 }) => {
   const router = useRouter();
 
-  // 1on1開始時の処理
   const handleConfirm = () => {
-    const queryString = `name=${encodeURIComponent(name)}&experience=${encodeURIComponent(experience)}&topic=${encodeURIComponent(topic)}&response=${encodeURIComponent(response)}&advice=${encodeURIComponent(advice)}`;
-    router.push(`/mentor/1on1?${queryString}`);
+    router.push(`/mentor/1on1?mentoring_id=${mentoring_id}`); // mentoring_idをURLに渡す
     onConfirm();
   };
 
