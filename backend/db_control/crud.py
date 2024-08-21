@@ -99,7 +99,7 @@ def get_mentoring_data(models, mentor_id):
 
 
 # メンタリング開始時の情報取得
-def get_mentoring_info(models, mentoring_id):
+def get_mentoring_details(models, mentoring_id):
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -149,13 +149,12 @@ def get_mentoring_info(models, mentoring_id):
 
 
 # メンタリング結果の保存
-def update_data(models, values):
+def update_data(models, mentoring_id, datas):
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    mentoring_id = values.pop("id")
     # ここで話者分離データの作成＋要約データの作成して、valuesに追加。
-    query = update(models).values(values).where(models.id == mentoring_id)
+    query = update(models).values(datas).where(models.id == mentoring_id)
 
     try:
         with session.begin():
