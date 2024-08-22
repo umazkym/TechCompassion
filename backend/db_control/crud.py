@@ -147,14 +147,12 @@ def get_mentoring_details(models, mentoring_id):
     return result_json
 
 
-
 # メンタリング結果の保存
-def update_data(models, mentoring_id, datas):
+def update_data(models, mentoring_id, data):
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # ここで話者分離データの作成＋要約データの作成して、valuesに追加。
-    query = update(models).values(datas).where(models.id == mentoring_id)
+    query = update(models).values(data).where(Mentoring.id == mentoring_id)
 
     try:
         with session.begin():
@@ -165,7 +163,31 @@ def update_data(models, mentoring_id, datas):
         session.rollback()
 
     session.close()  # セッションを閉じる
-    return "put"
+    return "保存完了"
+
+
+# 情報取得
+def get_mtg_content(models, mentoring_id):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    # 使用するテーブルの結合とフィルタリング
+    query = select(models)
+    query = query.filter(Mentoring.id == mentoring_id)
+
+    try:
+        with session.begin():  # トランザクションを開始
+            df = pd.read_sql_query(query, con=engine)
+            df = df[['mtg_content']]
+            result_json = df.to_json(orient='records', force_ascii=False)
+            result_json = json.loads(result_json)
+
+    except sqlalchemy.exc.IntegrityError:
+        print("一意制約違反により、挿入に失敗しました")
+        result_json = None
+
+    session.close()  # セッションを閉じる
+    return result_json
 
 
 # メンタースキルマップ
