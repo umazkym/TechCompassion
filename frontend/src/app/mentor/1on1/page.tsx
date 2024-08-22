@@ -148,7 +148,7 @@ const Page = () => {
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error('Error submitting data:', error);
-          alert(`データの送信に失敗しました: ${error.message}`);
+          // alert(`データの送信に失敗しました: ${error.message}`);
         } else {
           console.error('Error submitting data:', error);
           alert('データの送信に失敗しました');
@@ -184,7 +184,7 @@ const Page = () => {
         </div>
         <div className="w-full md:w-3/5">
           <div className="flex items-center h-full">
-            <div className="bg-[#6C69FF] w-80 py-2 rounded-2xl text-center text-white">
+            <div className="bg-[#6C69FF] w-full py-2 rounded-2xl text-center text-white">
               <div>ワンポイント</div>
               <div>アドバイス</div>
             </div>
@@ -231,7 +231,7 @@ const Page = () => {
                     onClick={handleStartRecording}
                     className="bg-[#6C69FF] text-white py-4 px-8 rounded-lg shadow-lg"
                   >
-                    文字おこしを開始する
+                    1on1を開始する
                   </button>
                 </div>
               )
@@ -243,7 +243,7 @@ const Page = () => {
         {activeTab === 'tab2' && (
           <div className="text-lg">
             <textarea
-              className="w-full h-96 p-2 border border-gray-300 rounded-lg bg-white text-black"
+              className="w-full h-[620px] p-2 border border-gray-300 rounded-lg bg-white text-black"
               placeholder="ここにメモを入力してください"
               value={memo}
               onChange={(e) => setMemo(e.target.value)} // メモの状態を更新
@@ -251,34 +251,24 @@ const Page = () => {
           </div>
         )}
         {activeTab === 'tab3' && (
-          <div className="text-lg">
-            <p>
-              1. 相談内容<br />
-              山田太郎さんは、現在の仕事に対するモチベーションの低下について相談してきました。<br />
-              具体的には、業務が単調に感じられ、新しいスキルを学ぶ機会が少ないと感じているとのことです。
-            </p>
-            <p>
-              2. 興味・関心<br />
-              山田太郎さんは、データ分析やプロジェクトマネジメントに強い興味を持っており、これらのスキルを身につけたいと考えています。<br />
-              しかし、具体的な始め方が分からず、戸惑っている状況です。
-            </p>
-            <p>
-              3. 提案・アクションプラン<br />
-              山田太郎さんに対して、以下のアクションプランを提案しました。<br />
-              - 会社内のプロジェクト調査: データ分析やプロジェクトマネジメントに関する社内プロジェクトを調査し、それに関わることで実践的に学ぶ機会を得る。<br />
-              - オンラインコースの活用: 外部のオンラインコースやセミナーを活用し、自己学習を進める。
-            </p>
-            <p>
-              4. 心情<br />
-              山田太郎さんは、現在の状況に対して不安や戸惑いを感じていますが、新しいスキルを学ぶ意欲は高く、具体的なアクションプランを提示されたことで、少し安心した様子でした。
-            </p>
-          </div>
+          <div className="text-lg leading-relaxed">
+          <p><strong>サマリー：</strong></p>
+          <ul className="list-disc list-inside ml-4">
+            <li>メンターとメンティーが、職場での早朝の過ごし方や、上司との良好な関係の築き方について話し合いました。</li>
+          </ul>
+          <p><strong>詳細：</strong></p>
+          <ul className="list-disc list-inside ml-4">
+            <li>メンターは、早めに出勤して自己学習や準備を行うことで、上司からの評価が上がる経験を共有しました。</li>
+            <li>メンティーは上司との関係改善のために、挨拶や他人の手助けを積極的に行うことの重要性に気づきました。</li>
+            <li>彼らは、仕事のスキルだけでなく、周囲との良好な関係が職場での成功に繋がると結論づけました。</li>
+          </ul>
+        </div>
         )}
       </div>
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <p className="mb-4">文字おこしが終了しました。</p>
+            <p className="mb-4">1on1データを保存しました。</p>
             <button
               onClick={closePopup}
               className="bg-blue-500 text-white py-2 px-4 rounded"
@@ -294,7 +284,7 @@ const Page = () => {
             onClick={handleEndRecording}
             className="bg-[#F24822] text-white py-2 px-6 rounded-lg shadow-lg"
           >
-            文字おこしを終了する
+            1on1を終了する
           </button>
         </div>
       )}
