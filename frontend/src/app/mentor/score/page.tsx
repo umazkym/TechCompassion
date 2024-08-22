@@ -6,12 +6,11 @@ import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Title, 
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Title, Tooltip, Legend, CategoryScale, LinearScale);
 
-// スキルマップデータの型を定義
 interface SkillMapData {
     mentor_id: number;
     name: string;
     mentoring_id: number;
-    mtg_date: number; // UNIXタイムスタンプ
+    mtg_date: string; // ISO形式の日付に変更
     listening_score: number;
     questioning_score: number;
     feedbacking_score: number;
@@ -28,58 +27,104 @@ interface SkillMapData {
 
 const Page = () => {
     const [skillMapData, setSkillMapData] = useState<SkillMapData[]>([]);
+    const [aiSkillMapData, setAiSkillMapData] = useState<SkillMapData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
 
-    // ページ読み込み時にスキルマップデータを取得
+    const colors = [
+        '#F6684E', '#F6684E', '#F6684E',
+        '#FFA629', '#FFA629',
+        '#FFCD29', '#FFCD29',
+        '#14AE5C', '#0D99FF', '#0D99FF',
+    ];
+
     useEffect(() => {
         const fetchSkillMapData = async () => {
             try {
                 const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/1');
                 const data: SkillMapData[] = await response.json();
-                setSkillMapData(data);
-                setCurrentPage(data.length - 1);  // 最新データを表示するために設定
+                setSkillMapData(data.reverse());  // データを逆順にして、最新のデータが右側に来るように設定
+                setCurrentPage(0);  // 最新のデータを表示するために、currentPageをデータの最初に設定
             } catch (error) {
-                console.error('スキルマップデータの取得に失敗しました:', error);
+                console.error('Failed to fetch skill map data:', error);
             }
         };
-    
+
+        const fetchAiSkillMapData = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/0');
+                const data: SkillMapData[] = await response.json();
+                setAiSkillMapData(data.reverse());  // AIデータも逆順に設定
+            } catch (error) {
+                console.error('Failed to fetch AI skill map data:', error);
+            }
+        };
+
         fetchSkillMapData();
+        fetchAiSkillMapData();
     }, []);
 
     // 時系列のラベル（mtg_dateを使用）
     const labels = skillMapData.map(item => 
         new Date(item.mtg_date).toLocaleDateString('ja-JP')
-    ).reverse();  // データを逆転
+    );
+
+    const aiLabels = aiSkillMapData.map(item => 
+        new Date(item.mtg_date).toLocaleDateString('ja-JP')
+    );
 
     // 総スコアの時系列データ
-    const totalScores = skillMapData.map(item => item.total_score).reverse();  // データを逆転
+    const totalScores = skillMapData.map(item => item.total_score);
+    const aiTotalScores = aiSkillMapData.map(item => item.total_score);
 
-    // 折れ線グラフのデータ設定
     const lineData = {
         labels: labels,
         datasets: [
             {
                 label: '総スコア',
                 data: totalScores,
-                borderColor: '#555555',
+                borderColor: '#555555',  // メンティーからの主観的FBと同じ線色
                 backgroundColor: '#6C69FF',
                 pointBackgroundColor: totalScores.map((_, index) =>
-                    index === currentPage ? '#FF0000' : '#6C69FF' // 現在ページを赤色で強調
+                    index === currentPage ? '#FF0000' : '#6C69FF' // 現在のページのプロットを赤色で強調
                 ),
                 pointBorderColor: '#FFFFFF',
                 borderWidth: 2,
                 pointRadius: totalScores.map((_, index) =>
-                    index === currentPage ? 10 : 7 // 現在ページのプロットを拡大
+                    index === currentPage ? 10 : 7 // 現在のページのプロットの大きさを拡大
                 ),
                 pointHoverRadius: totalScores.map((_, index) =>
-                    index === currentPage ? 12 : 9 // ホバー時のプロットを調整
+                    index === currentPage ? 12 : 9 // ホバー時のプロットの大きさを調整
                 ),
-                tension: 0,  // 曲線を無効に設定
+                tension: 0,  // 曲線を無効にするためにtensionを0に設定
             },
         ],
     };
-    
-    // レーダーチャート用のデータ設定
+
+    const aiLineData = {
+        labels: aiLabels,
+        datasets: [
+            {
+                label: 'AIスコア',
+                data: aiTotalScores,
+                borderColor: '#555555',  // メンティーからの主観的FBと同じ線色
+                backgroundColor: '#6C69FF',
+                pointBackgroundColor: aiTotalScores.map((_, index) =>
+                    index === currentPage ? '#FF4500' : '#6C69FF' // 現在のページのプロットを赤色で強調
+                ),
+                pointBorderColor: '#FFFFFF',
+                borderWidth: 2,
+                pointRadius: aiTotalScores.map((_, index) =>
+                    index === currentPage ? 10 : 7 // 現在のページのプロットの大きさを拡大
+                ),
+                pointHoverRadius: aiTotalScores.map((_, index) =>
+                    index === currentPage ? 12 : 9 // ホバー時のプロットの大きさを調整
+                ),
+                tension: 0,  // 曲線を無効にするためにtensionを0に設定
+            },
+        ],
+    };
+
+    // レーダーチャート用のデータも逆転を考慮
     const radarData = {
         labels: [
             '傾聴力', '質問力', 'FBスキル', '共感力',
@@ -90,25 +135,50 @@ const Page = () => {
             {
                 label: '主観的FB',
                 data: [
-                    skillMapData[skillMapData.length - 1 - currentPage].listening_score, 
-                    skillMapData[skillMapData.length - 1 - currentPage].questioning_score, 
-                    skillMapData[skillMapData.length - 1 - currentPage].feedbacking_score,
-                    skillMapData[skillMapData.length - 1 - currentPage].empathizing_score, 
-                    skillMapData[skillMapData.length - 1 - currentPage].motivating_score, 
-                    skillMapData[skillMapData.length - 1 - currentPage].coaching_score,
-                    skillMapData[skillMapData.length - 1 - currentPage].teaching_score, 
-                    skillMapData[skillMapData.length - 1 - currentPage].analyzing_score, 
-                    skillMapData[skillMapData.length - 1 - currentPage].inspiration_score,
-                    skillMapData[skillMapData.length - 1 - currentPage].vision_score
+                    skillMapData[currentPage].listening_score, 
+                    skillMapData[currentPage].questioning_score, 
+                    skillMapData[currentPage].feedbacking_score,
+                    skillMapData[currentPage].empathizing_score, 
+                    skillMapData[currentPage].motivating_score, 
+                    skillMapData[currentPage].coaching_score,
+                    skillMapData[currentPage].teaching_score, 
+                    skillMapData[currentPage].analyzing_score, 
+                    skillMapData[currentPage].inspiration_score,
+                    skillMapData[currentPage].vision_score
                 ],
                 borderColor: '#555555',
                 borderWidth: 2,
-                pointBackgroundColor: [
-                    '#F6684E', '#F6684E', '#F6684E',
-                    '#FFA629', '#FFA629',
-                    '#FFCD29', '#FFCD29',
-                    '#14AE5C', '#0D99FF', '#0D99FF',
+                pointBackgroundColor: colors,
+                pointBorderColor: '#FFFFFF',
+                pointHoverBackgroundColor: '#FFFFFF',
+                pointHoverBorderColor: '#6C69FF',
+                pointRadius: (ctx: any) => ctx.raw === Math.max(...(ctx.dataset.data as number[])) ? 15 : 6,
+                pointStyle: (ctx: any) => ctx.raw === Math.max(...(ctx.dataset.data as number[])) ? 'rectRot' : 'circle',
+                pointHoverRadius: 15,
+            },
+        ] : [],
+    };
+
+    const aiRadarData = {
+        labels: radarData.labels,
+        datasets: aiSkillMapData.length > 0 ? [
+            {
+                label: 'AIのFB',
+                data: [
+                    aiSkillMapData[currentPage].listening_score, 
+                    aiSkillMapData[currentPage].questioning_score, 
+                    aiSkillMapData[currentPage].feedbacking_score,
+                    aiSkillMapData[currentPage].empathizing_score, 
+                    aiSkillMapData[currentPage].motivating_score, 
+                    aiSkillMapData[currentPage].coaching_score,
+                    aiSkillMapData[currentPage].teaching_score, 
+                    aiSkillMapData[currentPage].analyzing_score, 
+                    aiSkillMapData[currentPage].inspiration_score,
+                    aiSkillMapData[currentPage].vision_score
                 ],
+                borderColor: '#555555',
+                borderWidth: 2,
+                pointBackgroundColor: colors,
                 pointBorderColor: '#FFFFFF',
                 pointHoverBackgroundColor: '#FFFFFF',
                 pointHoverBorderColor: '#6C69FF',
@@ -143,7 +213,7 @@ const Page = () => {
                     beginAtZero: true, // 0から始める
                     color: '#333',
                     font: {
-                        weight: 'bold' as const,
+                        weight: 'bold' as const, // フォントの太さを指定
                         size: 15,
                     },
                 },
@@ -155,18 +225,10 @@ const Page = () => {
                 },
                 pointLabels: {
                     font: {
-                        weight: 'bold' as const,
+                        weight: 'bold' as const, // フォントの太さを指定
                         size: 20,
                     },
-                    color: (ctx: any) => {
-                        const colors = [
-                            '#F6684E', '#F6684E', '#F6684E',
-                            '#FFA629', '#FFA629',
-                            '#FFCD29', '#FFCD29',
-                            '#14AE5C', '#0D99FF', '#0D99FF',
-                        ];
-                        return colors[ctx.index];
-                    },
+                    color: (ctx: any) => colors[ctx.index],
                 },
             },
         },
@@ -233,9 +295,9 @@ const Page = () => {
         },
     };
 
-    // ページ移動時の処理
+    // メンティーのデータとAIのデータを同時にページ移動処理
     const handleNextPage = () => {
-        if (currentPage < skillMapData.length - 1) {
+        if (currentPage < skillMapData.length - 1 && currentPage < aiSkillMapData.length - 1) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -248,10 +310,11 @@ const Page = () => {
 
     return (
         <div className="flex flex-col min-h-screen p-8 bg-gray-50">
-            <div className='text-4xl py-5 font-semibold'>スキルマップ</div>
-            <div className='flex flex-col lg:flex-row items-center bg-white shadow-lg rounded-lg mb-8'>
-                <div className='w-full lg:w-1/2 p-10 border-b lg:border-b-0 lg:border-r-2 border-gray-300'>
-                    <div className='bg-[#6C69FF] w-full py-2 rounded-full text-center text-white text-lg font-medium'>
+            <div className="text-4xl py-5 font-semibold">スキルマップ</div>
+            <div className="flex flex-col lg:flex-row items-center bg-white shadow-lg rounded-lg mb-8">
+                {/* メンティーからの主観的FB */}
+                <div className="w-full lg:w-1/2 p-10 border-b lg:border-b-0 lg:border-r-2 border-gray-300">
+                    <div className="bg-[#6C69FF] w-full py-2 rounded-full text-center text-white text-lg font-medium">
                         メンティーからの主観的FB
                     </div>
                     <div className="mt-8 h-96">
@@ -264,100 +327,40 @@ const Page = () => {
                     <div className="mt-8 h-96">
                         <Radar data={radarData} options={radarOptions} />
                     </div>
-                    <div className='flex justify-center pt-5'>
-                        <button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 0}
-                            className='px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50'
-                        >
-                            &lt; 前
-                        </button>
-                        <button
-                            onClick={handleNextPage}
-                            disabled={currentPage >= skillMapData.length - 1}
-                            className='px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50'
-                        >
-                            次 &gt;
-                        </button>
-                    </div>
                 </div>
-                <div className='w-full lg:w-1/2 p-10'>
-                    <div className='bg-[#6C69FF] w-full py-2 rounded-full text-center text-white text-lg font-medium'>
+                {/* AIからの客観的FB */}
+                <div className="w-full lg:w-1/2 p-10">
+                    <div className="bg-[#FF69B4] w-full py-2 rounded-full text-center text-white text-lg font-medium">
                         AIからの客観的FB
                     </div>
                     <div className="mt-8 h-96">
-    <Line
-        data={{
-            labels: ['2024/1/1', '2024/2/1', '2024/3/1', '2024/4/1', '2024/5/1', '2024/6/1'],
-            datasets: [
-                {
-                    label: 'スコア',
-                    data: [75, 80, 85, 90, 88, 92],
-                    borderColor: '#555555',
-                    backgroundColor: '#6C69FF',
-                    pointBackgroundColor: '#6C69FF',
-                    pointBorderColor: '#FFFFFF',
-                    borderWidth: 2,
-                    pointRadius: 7,
-                    pointHoverRadius: 9,
-                    tension: 0.3,
-                },
-            ],
-        }}
-        options={lineOptions}
-    />
-</div>
+                        <Line data={aiLineData} options={lineOptions} />
+                    </div>
+                    <div className="text-center text-2xl font-semibold mt-4">
+                        対象メンティー: {aiSkillMapData[currentPage]?.name || "未選択"}
+                    </div>
 
-<div className="m-12" style={{ height: '44px' }}></div>
-
-<div className="mt-8 h-96">
-    <Radar
-        data={{
-            labels: ['傾聴力', '質問力', 'FBスキル', '共感力', 'モチベーション付与', 'コーチングスキル', '教育スキル', '分析力', 'インスピレーション', 'ビジョン形成'],
-            datasets: [
-                {
-                    label: '今回',
-                    data: [6, 8, 7, 9, 6, 7, 8, 5, 8, 7],
-                    borderColor: '#555555',
-                    borderWidth: 2,
-                    pointBackgroundColor: [
-                        '#F6684E', '#F6684E', '#F6684E',
-                        '#FFA629', '#FFA629',
-                        '#FFCD29', '#FFCD29',
-                        '#14AE5C', '#0D99FF', '#0D99FF',
-                    ],
-                    pointBorderColor: '#FFFFFF',
-                    pointHoverBackgroundColor: '#FFFFFF',
-                    pointHoverBorderColor: '#6C69FF',
-                    pointRadius: (ctx: any) => ctx.raw === Math.max(...(ctx.chart.data.datasets[0].data as number[])) ? 15 : 6,
-                    pointStyle: (ctx: any) => ctx.raw === Math.max(...(ctx.chart.data.datasets[0].data as number[])) ? 'rectRot' : 'circle',
-                    pointHoverRadius: 15,
-                },
-                {
-                    label: '前回',
-                    data: [4, 6, 5, 7, 4, 6, 7, 3, 7, 6],
-                    borderColor: '#555555',
-                    borderDash: [5, 5],
-                    borderWidth: 2,
-                    pointBackgroundColor: [
-                        '#F6684E', '#F6684E', '#F6684E',
-                        '#FFA629', '#FFA629',
-                        '#FFCD29', '#FFCD29',
-                        '#14AE5C', '#0D99FF', '#0D99FF',
-                    ],
-                    pointBorderColor: '#FFFFFF',
-                    pointHoverBackgroundColor: '#FFFFFF',
-                    pointHoverBorderColor: '#6C69FF',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                },
-            ],
-        }}
-        options={radarOptions}
-    />
-</div>
-
+                    <div className="mt-8 h-96">
+                        <Radar data={aiRadarData} options={radarOptions} />
+                    </div>
                 </div>
+            </div>
+            {/* ページ移動ボタンを中央に配置 */}
+            <div className="flex justify-center pt-5">
+                <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 0}
+                    className="px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50"
+                >
+                    &lt; 前
+                </button>
+                <button
+                    onClick={handleNextPage}
+                    disabled={currentPage >= skillMapData.length - 1 || currentPage >= aiSkillMapData.length - 1}
+                    className="px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50"
+                >
+                    次 &gt;
+                </button>
             </div>
         </div>
     );

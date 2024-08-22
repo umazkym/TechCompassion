@@ -64,7 +64,7 @@ const Page: React.FC = () => {
             <div className='text-4xl py-5'>Home</div>
             <div className='bg-[#D9D9D9] rounded-lg shadow-md'>
                 <div className='pl-5 py-3 text-2xl text-black'>1on1スケジュールテーブル</div>
-                <div className='flex flex-wrap justify-between gap-x-8 px-24 mx-24 py-10'>
+                <div className='flex flex-wrap justify-between gap-x-8 px-12 py-10'>
                     {currentItems.map(schedule => (
                         <UserDataCard
                             key={schedule.mentoring_id}

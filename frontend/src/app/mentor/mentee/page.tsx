@@ -30,8 +30,8 @@ const Page = () => {
       <div className="flex flex-col sm:flex-row bg-white border-gray-400 border-2 rounded-lg p-6 sm:p-10 mb-10">
         <div className="w-full sm:w-1/2 flex items-center mb-6 sm:mb-0">
           <div className="w-1/2 flex flex-col justify-center">
-            <p className="text-2xl sm:text-3xl font-semibold text-center">山田太郎</p>
-            <p className="text-lg sm:text-xl text-gray-600 text-center">入社3年目</p>
+            <p className="text-2xl sm:text-3xl font-semibold text-center">鈴木美咲</p>
+            <p className="text-lg sm:text-xl text-gray-600 text-center">入社1年目</p>
           </div>
           <div className="w-1/2 flex justify-center">
             <Image
@@ -83,35 +83,43 @@ const Page = () => {
         <div className="w-full lg:w-1/2 bg-[#D9D9D9] text-center rounded-xl p-6">
           <p className="text-xl sm:text-2xl font-semibold my-3">これまでのあしあと</p>
           <div className="flex flex-col space-y-6 sm:space-y-0 sm:flex-row sm:space-x-6">
-            {Array(2).fill(0).map((_, index) => (
+            {[
+              {
+                date: '7/5',
+                topic: 'プロジェクトの進捗管理',
+                response: '計画を立ててほしい',
+                advice: '進捗を細かく確認し、タスクが滞らないように計画的に進めましょう。課題が発生した際には、迅速に対策を講じることが重要です。'
+              },
+              {
+                date: '7/10',
+                topic: 'チーム内のコミュニケーション',
+                response: '意見交換の場を持ちたい',
+                advice: 'チームメンバーとのコミュニケーションを促進するために、定期的なミーティングや意見交換の場を設けることが効果的です。オープンな対話を心がけましょう。'
+              }
+            ].map((item, index) => (
               <div key={index} className="w-full bg-white rounded-xl border-[#555555] border-2 p-4 flex flex-col justify-between">
                 <div>
-                  <p className="text-lg font-semibold mb-2 text-center">7/1</p>
+                  <p className="text-lg font-semibold mb-2 text-center">{item.date}</p>
                   <div className="space-y-4">
                     <div className="flex items-center justify-center">
                       <div className="w-1/4 text-center">トピック：</div>
-                      <p className="text-lg">今後のキャリアについて</p>
+                      <p className="text-lg">{item.topic}</p>
                     </div>
                     <div className="flex items-center justify-center">
                       <div className="w-1/4 text-center">対応：</div>
-                      <p className="text-lg">一緒に考えてほしい</p>
+                      <p className="text-lg">{item.response}</p>
                     </div>
                     <div className="flex items-center justify-center">
                       <div className="w-80 pt-4 text-center">ワンポイントアドバイス</div>
                     </div>
                     <p className="text-lg text-center">
-                      前回はメンター主体で会話が進んだようです。メンティーが話したい内容を伝えやすい環境を作り、
-                      自己成長に繋がる気づきを促すための質問を意識しましょう。時間配分を適切に管理し、
-                      メンティーが自由に意見を表現できるような雰囲気作りを心掛けてください。
+                      {item.advice}
                     </p>
                   </div>
                 </div>
                 <div className="flex flex-col items-center mt-4">
-                  <Link href="/mentor/score" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4 w-full">
-                    過去のスコアを<br />振り返る
-                  </Link>
-                  <Link href="/mentor/history" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center w-full">
-                    過去の1on1を<br />振り返る
+                  <Link href="/mentor/history" className="block bg-[#555555] text-white py-3 px-6 rounded-lg shadow-lg text-center mb-4 w-full">
+                    過去の1on1を振り返る
                   </Link>
                 </div>
               </div>
@@ -122,26 +130,37 @@ const Page = () => {
         <div className="w-full lg:w-1/2 bg-[#D9D9D9] text-center rounded-xl p-6">
           <p className="text-xl sm:text-2xl font-semibold my-3">今後のスケジュール</p>
           <div className="flex flex-col space-y-6 sm:space-y-0 sm:flex-row sm:space-x-6">
-            {Array(2).fill(0).map((_, index) => (
+            {[
+              {
+                date: '7/15',
+                topic: '新しいスキルの習得',
+                response: 'トレーニング計画を立てる',
+                advice: 'スキルアップを目指すために、具体的な学習計画を立てましょう。短期目標を設定し、達成感を得ながら進めることが効果的です。'
+              },
+              {
+                date: '7/20',
+                topic: '顧客対応の改善',
+                response: 'フィードバックを受けたい',
+                advice: '顧客対応においては、常に顧客の視点に立ち、迅速かつ丁寧な対応を心がけましょう。フィードバックをもとに改善点を見つけ、次に活かしてください。'
+              }
+            ].map((item, index) => (
               <div key={index} className="w-full bg-white rounded-xl border-[#555555] border-2 p-4 flex flex-col justify-between">
                 <div>
-                  <p className="text-lg font-semibold mb-2 text-center">7/1</p>
+                  <p className="text-lg font-semibold mb-2 text-center">{item.date}</p>
                   <div className="space-y-4">
                     <div className="flex items-center justify-center">
                       <div className="w-1/4 text-center">トピック：</div>
-                      <p className="text-lg">今後のキャリアについて</p>
+                      <p className="text-lg">{item.topic}</p>
                     </div>
                     <div className="flex items-center justify-center">
                       <div className="w-1/4 text-center">対応：</div>
-                      <p className="text-lg">一緒に考えてほしい</p>
+                      <p className="text-lg">{item.response}</p>
                     </div>
                     <div className="flex items-center justify-center">
                       <div className="w-80 pt-4 text-center">ワンポイントアドバイス</div>
                     </div>
                     <p className="text-lg text-center">
-                      前回はメンター主体で会話が進んだようです。メンティーが話したい内容を伝えやすい環境を作り、
-                      自己成長に繋がる気づきを促すための質問を意識しましょう。時間配分を適切に管理し、
-                      メンティーが自由に意見を表現できるような雰囲気作りを心掛けてください。
+                      {item.advice}
                     </p>
                   </div>
                 </div>
