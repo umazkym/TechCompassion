@@ -1,0 +1,9 @@
+# pycache
+/db_control/__pycache__
+/__pycache__
+
+# .env
+.env
+
+# venv
+/venv
