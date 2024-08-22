@@ -16,10 +16,6 @@ API_KEY = os.getenv('OPEN_API_KEY')
 
 # 話者分離
 def some_speaker_separation(mtg_content):
-    # # mtg_contentの取得
-    # models = Mentoring
-    # result = crud.get_mtg_content(models, mentoring_id)
-    # mtg_content = result[0]['mtg_content']
 
     message = (
         '＃依頼'
