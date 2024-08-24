@@ -148,7 +148,7 @@ const Page = () => {
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error('Error submitting data:', error);
-          // alert(`データの送信に失敗しました: ${error.message}`);
+          alert(`データの送信に失敗しました: ${error.message}`);
         } else {
           console.error('Error submitting data:', error);
           alert('データの送信に失敗しました');
