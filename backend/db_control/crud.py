@@ -59,12 +59,14 @@ def get_mentoring_data(models, mentor_id):
     query = query.select_from(MenteeMaster).join(Mentoring, isouter=True)
     query = query.filter(MenteeMaster.mentor_id == mentor_id)
     query = query.filter(Mentoring.mtg_content == None)
+    query = query.filter(Mentoring.mtg_date != None)  # ここは、想定しているフローでは起こりえない。エラー処理で対応したい。
 
     try:
         with session.begin():  # トランザクションを開始
             today = datetime.today()
 
             df = pd.read_sql_query(query, con=engine).reset_index()
+            df['mentee_id'] =df['id']
             df['mentoring_id'] =df['id_1']
 
             # 日付データ形式の変換
@@ -83,9 +85,12 @@ def get_mentoring_data(models, mentor_id):
             for i in range(len(df)):
                 df.loc[i, 'working_years'] = (int(today.strftime('%Y%m%d')) -int(df.loc[i, 'join_date'].strftime('%Y%m%d'))) //10000 + 1
 
+            # 前回アドバイスデータの作成（本来はmtgリクエスト作成時に対応）
+            # ここが必要そう
+
             # データの抽出
-            df = df[['id', 'name', 'age', 'gender', 'working_years',
-                     'mentoring_id', 'mtg_date', 'mtg_start_time', 'request_to_mentor_for_attitude', 'request_to_mentor_for_content', 'advise_to_mentor_for_mtg']]
+            df = df[['mentoring_id', 'mentee_id', 'name', 'age', 'gender', 'working_years',
+                     'mtg_date', 'mtg_start_time', 'request_to_mentor_for_attitude', 'request_to_mentor_for_content', 'pre_advise_to_mentor_for_mtg']]
             df = df.sort_values('mtg_date', ascending=True)
             result_json = df.to_json(orient='records', force_ascii=False)
             result_json = json.loads(result_json)
@@ -134,7 +139,7 @@ def get_mentoring_details(models, mentoring_id):
 
             # データの抽出
             df = df[['id', 'name', 'age', 'gender', 'working_years',
-                     'mentoring_id', 'mtg_date', 'mtg_start_time', 'request_to_mentor_for_attitude', 'request_to_mentor_for_content', 'advise_to_mentor_for_mtg']]
+                     'mentoring_id', 'mtg_date', 'mtg_start_time', 'request_to_mentor_for_attitude', 'request_to_mentor_for_content', 'pre_advise_to_mentor_for_mtg', 'pre_mtg_content_summary']]
             df = df.sort_values('mtg_date', ascending=True)
             result_json = df.to_json(orient='records', force_ascii=False)
             result_json = json.loads(result_json)
