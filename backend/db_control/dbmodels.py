@@ -59,12 +59,13 @@ class Mentoring(Base):
     mtg_time :Mapped[datetime.time] = mapped_column(TIME)
     request_to_mentor_for_attitude :Mapped[str] = mapped_column(VARCHAR(100))
     request_to_mentor_for_content :Mapped[str] = mapped_column(VARCHAR(100))
-    advise_to_mentor_for_mtg :Mapped[Optional[str]] = mapped_column(VARCHAR(500))
+    advise_to_mentor_for_mtg :Mapped[Optional[str]] = mapped_column(VARCHAR(500))  # nullable=True
     mtg_content :Mapped[Optional[str]] # nullable=True
     mtg_content_summary :Mapped[Optional[str]] = mapped_column(VARCHAR(500))  # nullable=True
     mtg_memo :Mapped[Optional[str]] # nullable=True
     mtg_content_speaker_identification :Mapped[Optional[str]] # nullable=True
-
+    pre_advise_to_mentor_for_mtg :Mapped[Optional[str]] = mapped_column(VARCHAR(500))  # nullable=True
+    pre_mtg_content_summary :Mapped[Optional[str]] = mapped_column(VARCHAR(500))  # nullable=True
 
     feedbacks :Mapped['Feedback'] = relationship(back_populates="mentoring")
     mentee :Mapped['MenteeMaster'] = relationship(back_populates="mentorings")
