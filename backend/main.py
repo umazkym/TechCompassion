@@ -55,8 +55,8 @@ def get_mentoring_info(mentoring_id: int):
 @app.put("/mentoring/{mentoring_id}")
 
 # mtg_contentとmtg_memoの保存
-def save_mentoring_data(mentoring_id: int, request: Request):
-    data = request.json()
+async def save_mentoring_data(mentoring_id: int, request: Request):
+    data = await request.json()
     # data = {
     #     "mtg_content": "11111",
     #     "mtg_memo": "1111",
@@ -66,10 +66,10 @@ def save_mentoring_data(mentoring_id: int, request: Request):
     return result
 
 # 話者分離 → 要約
-def process_after_meeting(mentoring_id: int, request: Request):
-    data = request.json()
+async def process_after_meeting(mentoring_id: int, request: Request):
+    data = await request.json()
     mtg_content = data['mtg_content']
-    mtg_speaker_separation = GPT.some_speaker_separation(mtg_content)
+    mtg_speaker_separation = await GPT.some_speaker_separation(mtg_content)
     mtg_content_summary = GPT.summary(mtg_speaker_separation)
     advise_to_mentor_for_mtg = GPT.advice(mtg_speaker_separation)
     data = {
