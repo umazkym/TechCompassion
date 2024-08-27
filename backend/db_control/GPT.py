@@ -1,11 +1,5 @@
 
-import sqlalchemy
 import pandas as pd
-from sqlalchemy import select, update
-from sqlalchemy.orm import sessionmaker
-from db_control import crud
-from db_control.connect import engine
-from db_control.dbmodels import Mentoring
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
