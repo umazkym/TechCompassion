@@ -5,18 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// メンティー詳細ページのコンポーネント
 const Page = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
-  // コンポーネントのマウント状態を管理
+  // コンポーネントのマウント状態を設定
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // 1on1開始確認時の処理
+  // 1on1開始確認後の処理
   const handleConfirm = () => {
     setShowConfirm(false);
     if (isMounted) {

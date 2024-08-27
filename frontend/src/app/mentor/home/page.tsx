@@ -1,4 +1,4 @@
-"use client";  // これを追加
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import UserDataCard from './components/1on1_schedule';
@@ -11,11 +11,11 @@ interface MentoringData {
     gender: string;
     working_years: number;
     mentoring_id: number;
-    mtg_date: number;
+    mtg_date: string;
     mtg_start_time: string;
     request_to_mentor_for_attitude: string;
     request_to_mentor_for_content: string;
-    advise_to_mentor_for_mtg: string;
+    pre_advise_to_mentor_for_mtg: string;
 }
 
 const Page: React.FC = () => {
@@ -24,6 +24,7 @@ const Page: React.FC = () => {
     const [showPopup, setShowPopup] = useState(false);
     const itemsPerPage = 3;
 
+    // メンタリングスケジュールデータを取得
     useEffect(() => {
         const fetchMentoringSchedules = async () => {
             try {
@@ -38,12 +39,14 @@ const Page: React.FC = () => {
         fetchMentoringSchedules();
     }, []);
 
+    // ページ送り
     const handleNextPage = () => {
         if ((currentPage + 1) * itemsPerPage < mentoringSchedules.length) {
             setCurrentPage(currentPage + 1);
         }
     };
 
+    // ページ戻り
     const handlePrevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
@@ -74,7 +77,7 @@ const Page: React.FC = () => {
                             experience={`入社${schedule.working_years}年目`}
                             topic={schedule.request_to_mentor_for_content}
                             response={schedule.request_to_mentor_for_attitude}
-                            advice={schedule.advise_to_mentor_for_mtg}
+                            advice={schedule.pre_advise_to_mentor_for_mtg}
                             mentoring_id={schedule.mentoring_id}
                             setShowPopup={setShowPopup}
                         />

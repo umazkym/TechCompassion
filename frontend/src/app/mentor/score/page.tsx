@@ -10,7 +10,7 @@ interface SkillMapData {
     mentor_id: number;
     name: string;
     mentoring_id: number;
-    mtg_date: string; // ISO形式の日付に変更
+    mtg_date: string;
     listening_score: number;
     questioning_score: number;
     feedbacking_score: number;
@@ -42,8 +42,8 @@ const Page = () => {
             try {
                 const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/1');
                 const data: SkillMapData[] = await response.json();
-                setSkillMapData(data.reverse());  // データを逆順にして、最新のデータが右側に来るように設定
-                setCurrentPage(0);  // 最新のデータを表示するために、currentPageをデータの最初に設定
+                setSkillMapData(data.reverse());
+                setCurrentPage(0);
             } catch (error) {
                 console.error('Failed to fetch skill map data:', error);
             }
@@ -53,7 +53,7 @@ const Page = () => {
             try {
                 const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/0');
                 const data: SkillMapData[] = await response.json();
-                setAiSkillMapData(data.reverse());  // AIデータも逆順に設定
+                setAiSkillMapData(data.reverse());
             } catch (error) {
                 console.error('Failed to fetch AI skill map data:', error);
             }
@@ -63,7 +63,6 @@ const Page = () => {
         fetchAiSkillMapData();
     }, []);
 
-    // 時系列のラベル（mtg_dateを使用）
     const labels = skillMapData.map(item => 
         new Date(item.mtg_date).toLocaleDateString('ja-JP')
     );
@@ -72,30 +71,29 @@ const Page = () => {
         new Date(item.mtg_date).toLocaleDateString('ja-JP')
     );
 
-    // 総スコアの時系列データ
     const totalScores = skillMapData.map(item => item.total_score);
     const aiTotalScores = aiSkillMapData.map(item => item.total_score);
 
     const lineData = {
-        labels: labels,
+        labels,
         datasets: [
             {
                 label: '総スコア',
                 data: totalScores,
-                borderColor: '#555555',  // メンティーからの主観的FBと同じ線色
+                borderColor: '#555555',
                 backgroundColor: '#6C69FF',
                 pointBackgroundColor: totalScores.map((_, index) =>
-                    index === currentPage ? '#FF0000' : '#6C69FF' // 現在のページのプロットを赤色で強調
+                    index === currentPage ? '#FF0000' : '#6C69FF'
                 ),
                 pointBorderColor: '#FFFFFF',
                 borderWidth: 2,
                 pointRadius: totalScores.map((_, index) =>
-                    index === currentPage ? 10 : 7 // 現在のページのプロットの大きさを拡大
+                    index === currentPage ? 10 : 7
                 ),
                 pointHoverRadius: totalScores.map((_, index) =>
-                    index === currentPage ? 12 : 9 // ホバー時のプロットの大きさを調整
+                    index === currentPage ? 12 : 9
                 ),
-                tension: 0,  // 曲線を無効にするためにtensionを0に設定
+                tension: 0,
             },
         ],
     };
@@ -106,25 +104,24 @@ const Page = () => {
             {
                 label: 'AIスコア',
                 data: aiTotalScores,
-                borderColor: '#555555',  // メンティーからの主観的FBと同じ線色
+                borderColor: '#555555',
                 backgroundColor: '#6C69FF',
                 pointBackgroundColor: aiTotalScores.map((_, index) =>
-                    index === currentPage ? '#FF4500' : '#6C69FF' // 現在のページのプロットを赤色で強調
+                    index === currentPage ? '#FF4500' : '#6C69FF'
                 ),
                 pointBorderColor: '#FFFFFF',
                 borderWidth: 2,
                 pointRadius: aiTotalScores.map((_, index) =>
-                    index === currentPage ? 10 : 7 // 現在のページのプロットの大きさを拡大
+                    index === currentPage ? 10 : 7
                 ),
                 pointHoverRadius: aiTotalScores.map((_, index) =>
-                    index === currentPage ? 12 : 9 // ホバー時のプロットの大きさを調整
+                    index === currentPage ? 12 : 9
                 ),
-                tension: 0,  // 曲線を無効にするためにtensionを0に設定
+                tension: 0,
             },
         ],
     };
 
-    // レーダーチャート用のデータも逆転を考慮
     const radarData = {
         labels: [
             '傾聴力', '質問力', 'FBスキル', '共感力',
@@ -206,14 +203,14 @@ const Page = () => {
         },
         scales: {
             r: {
-                min: 0, // レーダーチャートの最小値を設定
-                max: 10, // レーダーチャートの最大値を設定
+                min: 0,
+                max: 10,
                 ticks: {
-                    stepSize: 1, // 目盛の間隔を設定
-                    beginAtZero: true, // 0から始める
+                    stepSize: 1,
+                    beginAtZero: true,
                     color: '#333',
                     font: {
-                        weight: 'bold' as const, // フォントの太さを指定
+                        weight: 'bold' as const,
                         size: 15,
                     },
                 },
@@ -225,7 +222,7 @@ const Page = () => {
                 },
                 pointLabels: {
                     font: {
-                        weight: 'bold' as const, // フォントの太さを指定
+                        weight: 'bold' as const,
                         size: 20,
                     },
                     color: (ctx: any) => colors[ctx.index],
@@ -295,7 +292,6 @@ const Page = () => {
         },
     };
 
-    // メンティーのデータとAIのデータを同時にページ移動処理
     const handleNextPage = () => {
         if (currentPage < skillMapData.length - 1 && currentPage < aiSkillMapData.length - 1) {
             setCurrentPage(currentPage + 1);
@@ -312,7 +308,6 @@ const Page = () => {
         <div className="flex flex-col min-h-screen p-8 bg-gray-50">
             <div className="text-4xl py-5 font-semibold">スキルマップ</div>
             <div className="flex flex-col lg:flex-row items-center bg-white shadow-lg rounded-lg mb-8">
-                {/* メンティーからの主観的FB */}
                 <div className="w-full lg:w-1/2 p-10 border-b lg:border-b-0 lg:border-r-2 border-gray-300">
                     <div className="bg-[#6C69FF] w-full py-2 rounded-full text-center text-white text-lg font-medium">
                         メンティーからの主観的FB
@@ -323,12 +318,10 @@ const Page = () => {
                     <div className="text-center text-2xl font-semibold mt-4">
                         対象メンティー: {skillMapData[currentPage]?.name || "未選択"}
                     </div>
-
                     <div className="mt-8 h-96">
                         <Radar data={radarData} options={radarOptions} />
                     </div>
                 </div>
-                {/* AIからの客観的FB */}
                 <div className="w-full lg:w-1/2 p-10">
                     <div className="bg-[#FF69B4] w-full py-2 rounded-full text-center text-white text-lg font-medium">
                         AIからの客観的FB
@@ -339,13 +332,11 @@ const Page = () => {
                     <div className="text-center text-2xl font-semibold mt-4">
                         対象メンティー: {aiSkillMapData[currentPage]?.name || "未選択"}
                     </div>
-
                     <div className="mt-8 h-96">
                         <Radar data={aiRadarData} options={radarOptions} />
                     </div>
                 </div>
             </div>
-            {/* ページ移動ボタンを中央に配置 */}
             <div className="flex justify-center pt-5">
                 <button
                     onClick={handlePrevPage}

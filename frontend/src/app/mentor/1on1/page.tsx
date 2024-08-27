@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
 
-// SpeechRecognition の型を定義
+// 音声認識の型を定義
 interface ISpeechRecognition extends EventTarget {
   start: () => void;
   stop: () => void;
@@ -25,23 +25,27 @@ declare global {
 const Page = () => {
   const searchParams = useSearchParams();
   const mentoring_id = searchParams.get('mentoring_id');
+
+  // 状態管理
   const [activeTab, setActiveTab] = useState('tab1');
-  const [memo, setMemo] = useState(''); // メモの状態を管理
+  const [memo, setMemo] = useState('');
   const [userInfo, setUserInfo] = useState({
     name: '',
     experience: '',
     topic: '',
     response: '',
     advice: '',
+    summary: '',
+    preAdvise: '',
   });
-  const [isRecording, setIsRecording] = useState(false); // 録音状態の管理
-  const [transcript, setTranscript] = useState(''); // 現在の発話の文字起こしを保存
-  const [finalTranscript, setFinalTranscript] = useState(''); // 完成した発話の文字起こしを保存
-  const [showPopup, setShowPopup] = useState(false); // ポップアップの表示管理
-  const [showButtons, setShowButtons] = useState(true); // ボタン表示の管理
-  const recognitionRef = useRef<ISpeechRecognition | null>(null); // SpeechRecognition API のインスタンスを保持
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [finalTranscript, setFinalTranscript] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [showButtons, setShowButtons] = useState(true);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
 
-  // ページのURLパラメータからユーザー情報を取得
+  // ページ読み込み時にユーザー情報を取得
   useEffect(() => {
     if (mentoring_id) {
       const fetchUserInfo = async () => {
@@ -56,6 +60,8 @@ const Page = () => {
               topic: user.request_to_mentor_for_content,
               response: user.request_to_mentor_for_attitude,
               advice: user.advise_to_mentor_for_mtg || '',
+              summary: user.pre_mtg_content_summary || '',
+              preAdvise: user.pre_advise_to_mentor_for_mtg || '',
             });
           }
         } catch (error) {
@@ -70,37 +76,34 @@ const Page = () => {
   // SpeechRecognition API の設定
   useEffect(() => {
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      (window.SpeechRecognition || window.webkitSpeechRecognition) as any;
+
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.lang = 'ja-JP'; // 言語を日本語に設定
       recognition.interimResults = true; // 中間結果も取得する
-
-      // 音声認識の結果を処理
       recognition.onresult = (event: any) => {
         let interimTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            setFinalTranscript((prev) => prev + transcript + ' '); // 最終結果を保存
+            setFinalTranscript((prev) => prev + transcript + ' ');
           } else {
-            interimTranscript += transcript; // 中間結果を保存
+            interimTranscript += transcript;
           }
         }
-        setTranscript(interimTranscript); // 中間結果を表示
+        setTranscript(interimTranscript);
       };
 
-      // 録音が終了したときの処理
       recognition.onend = () => {
         setIsRecording(false);
       };
 
-      // recognition インスタンスを ref に保持
       recognitionRef.current = recognition;
     }
 
-    // クリーンアップ関数: コンポーネントがアンマウントされたときに録音を停止
+    // クリーンアップ関数
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
@@ -116,7 +119,7 @@ const Page = () => {
     }
   };
 
-  // 録音の終了とAPI送信、ポップアップ表示
+  // 録音の終了とAPI送信
   const handleEndRecording = async () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -128,14 +131,10 @@ const Page = () => {
         mtg_memo: memo,
       };
 
-      console.log("Sending data:", data); // 送信データを確認
-
       try {
         const response = await fetch(`http://127.0.0.1:8000/mentoring/${mentoring_id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
 
@@ -161,16 +160,17 @@ const Page = () => {
   };
 
   // ポップアップを閉じる
-  const closePopup = () => {
-    setShowPopup(false);
-  };
+  const closePopup = () => setShowPopup(false);
 
   return (
     <div className="flex flex-col min-h-screen p-8">
+      {/* ヘッダー */}
       <div className="flex justify-between items-center">
         <div className="text-4xl py-5">1on1ミーティング<br/>{userInfo.name}</div>
         <div className="text-md">作成日: 2024/1/1</div>
       </div>
+
+      {/* メインコンテンツ */}
       <div className="flex items-center justify-center py-2 mb-3">
         <div className="w-full md:w-2/5 space-y-6">
           <div className="flex items-center">
@@ -188,10 +188,12 @@ const Page = () => {
               <div>ワンポイント</div>
               <div>アドバイス</div>
             </div>
-            <div className="ml-5 text-lg">{userInfo.advice}</div>
+            <div className="ml-5 text-lg">{userInfo.preAdvise}</div>
           </div>
         </div>
       </div>
+
+      {/* タブナビゲーション */}
       <div className="flex mb-[-1px]">
         <button
           className={`py-2 px-4 rounded-t-lg flex items-center border border-[#555555] ${
@@ -221,6 +223,8 @@ const Page = () => {
           <Icon icon="carbon:save" className="ml-2 text-2xl" />
         </button>
       </div>
+
+      {/* タブコンテンツ */}
       <div className="border border-[#555555] p-4 mt-[-1px] bg-white flex-1 overflow-y-auto relative">
         {activeTab === 'tab1' && (
           <div>
@@ -246,25 +250,21 @@ const Page = () => {
               className="w-full h-[620px] p-2 border border-gray-300 rounded-lg bg-white text-black"
               placeholder="ここにメモを入力してください"
               value={memo}
-              onChange={(e) => setMemo(e.target.value)} // メモの状態を更新
+              onChange={(e) => setMemo(e.target.value)}
             />
           </div>
         )}
         {activeTab === 'tab3' && (
           <div className="text-lg leading-relaxed">
-          <p><strong>サマリー：</strong></p>
-          <ul className="list-disc list-inside ml-4">
-            <li>メンターとメンティーが、職場での早朝の過ごし方や、上司との良好な関係の築き方について話し合いました。</li>
-          </ul>
-          <p><strong>詳細：</strong></p>
-          <ul className="list-disc list-inside ml-4">
-            <li>メンターは、早めに出勤して自己学習や準備を行うことで、上司からの評価が上がる経験を共有しました。</li>
-            <li>メンティーは上司との関係改善のために、挨拶や他人の手助けを積極的に行うことの重要性に気づきました。</li>
-            <li>彼らは、仕事のスキルだけでなく、周囲との良好な関係が職場での成功に繋がると結論づけました。</li>
-          </ul>
-        </div>
+            <p><strong>サマリー：</strong></p>
+            <ul className="list-disc list-inside ml-4">
+              <li>{userInfo.summary}</li>
+            </ul>
+          </div>
         )}
       </div>
+
+      {/* ポップアップ表示 */}
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
@@ -278,6 +278,8 @@ const Page = () => {
           </div>
         </div>
       )}
+
+      {/* 終了ボタン */}
       {showButtons && (
         <div className="flex justify-center mt-6">
           <button

@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
 
-// 1on1履歴ページのコンポーネント
 const Page = () => {
   const [activeTab, setActiveTab] = useState('tab1');
-  const [memo, setMemo] = useState(''); // メモの状態を管理
+  const [memo, setMemo] = useState('');
   const router = useRouter();
 
-  // 1on1終了時の処理
+  // 1on1終了時にホーム画面に遷移
   const handleEndSession = () => {
     router.push('/mentor/home');
   };
@@ -168,7 +167,6 @@ const Page = () => {
             <div className="bg-gray-200 p-3 mb-3 rounded-lg">
               <strong>メンティー：</strong> そうですね。ちょっとまた考えてみます。
             </div>
-            {/* Add more conversation history items here */}
           </div>
         )}
         {activeTab === 'tab2' && (
@@ -177,7 +175,7 @@ const Page = () => {
               className="w-full h-[820px] p-2 border border-gray-300 rounded-lg bg-white text-black"
               placeholder="ここにメモを入力してください"
               value={memo}
-              onChange={(e) => setMemo(e.target.value)} // メモの状態を更新
+              onChange={(e) => setMemo(e.target.value)}
             />
           </div>
         )}

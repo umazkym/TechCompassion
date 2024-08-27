@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-// メンティーデータの型を定義
 interface MenteeData {
     id: number;
     name: string;
@@ -15,9 +14,9 @@ interface MenteeData {
 const MatchingMentee: React.FC = () => {
     const [mentees, setMentees] = useState<MenteeData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 4;  // 一度に表示する最大数
+    const itemsPerPage = 4;
 
-    // ページ読み込み時にメンティーデータを取得
+    // メンティーデータ取得
     useEffect(() => {
         const fetchMentees = async () => {
             try {
@@ -32,7 +31,7 @@ const MatchingMentee: React.FC = () => {
         fetchMentees();
     }, []);
 
-    // 次のページに進む
+    // 次のページへ進む
     const handleNextPage = () => {
         if ((currentPage + 1) * itemsPerPage < mentees.length) {
             setCurrentPage(currentPage + 1);
@@ -46,7 +45,6 @@ const MatchingMentee: React.FC = () => {
         }
     };
 
-    // 現在のページに表示するアイテムを取得
     const currentItems = mentees.slice(
         currentPage * itemsPerPage,
         currentPage * itemsPerPage + itemsPerPage

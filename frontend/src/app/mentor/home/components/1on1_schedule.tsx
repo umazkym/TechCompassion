@@ -11,7 +11,7 @@ interface UserDataCardProps {
   topic: string;
   response: string;
   advice: string;
-  mentoring_id: number; // mentoring_idを追加
+  mentoring_id: number;
   setShowPopup: (show: boolean) => void;
 }
 
@@ -23,21 +23,24 @@ const UserDataCard: React.FC<UserDataCardProps> = ({
   topic,
   response,
   advice,
-  mentoring_id, // mentoring_idを受け取る
+  mentoring_id,
   setShowPopup,
 }) => {
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // 1on1開始の確認
   const handleConfirm = () => {
     setShowConfirm(false);
     setShowPopup(false);
   };
 
+  // 1on1開始のキャンセル
   const handleCancel = () => {
     setShowConfirm(false);
     setShowPopup(false);
   };
 
+  // 1on1開始時の処理
   const handleStart1on1 = () => {
     setShowConfirm(true);
     setShowPopup(true);
@@ -88,7 +91,7 @@ const UserDataCard: React.FC<UserDataCardProps> = ({
           topic={topic}
           response={response}
           advice={advice}
-          mentoring_id={mentoring_id} // mentoring_idを渡す
+          mentoring_id={mentoring_id}
         />
       )}
     </div>
