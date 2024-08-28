@@ -161,7 +161,7 @@ export default function Users() {
 
   return (
     <div className="min-h-screen bg-gray-200 p-4">
-      <ToastContainer />
+      {/* <ToastContainer />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">従業員一覧</h1>
         <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400" onClick={handleLogout}>
@@ -290,7 +290,7 @@ export default function Users() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
