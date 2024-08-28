@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
 
-// 音声認識の型を定義
 interface ISpeechRecognition extends EventTarget {
   start: () => void;
   stop: () => void;
@@ -22,11 +21,10 @@ declare global {
   }
 }
 
-const Page = () => {
+const PageContent = () => {
   const searchParams = useSearchParams();
   const mentoring_id = searchParams.get('mentoring_id');
 
-  // 状態管理
   const [activeTab, setActiveTab] = useState('tab1');
   const [memo, setMemo] = useState('');
   const [userInfo, setUserInfo] = useState({
@@ -45,7 +43,6 @@ const Page = () => {
   const [showButtons, setShowButtons] = useState(true);
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
 
-  // ページ読み込み時にユーザー情報を取得
   useEffect(() => {
     if (mentoring_id) {
       const fetchUserInfo = async () => {
@@ -73,7 +70,6 @@ const Page = () => {
     }
   }, [mentoring_id]);
 
-  // SpeechRecognition API の設定
   useEffect(() => {
     const SpeechRecognition =
       (window.SpeechRecognition || window.webkitSpeechRecognition) as any;
@@ -81,8 +77,8 @@ const Page = () => {
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
-      recognition.lang = 'ja-JP'; // 言語を日本語に設定
-      recognition.interimResults = true; // 中間結果も取得する
+      recognition.lang = 'ja-JP';
+      recognition.interimResults = true;
       recognition.onresult = (event: any) => {
         let interimTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -103,7 +99,6 @@ const Page = () => {
       recognitionRef.current = recognition;
     }
 
-    // クリーンアップ関数
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
@@ -111,7 +106,6 @@ const Page = () => {
     };
   }, []);
 
-  // 録音の開始
   const handleStartRecording = () => {
     if (recognitionRef.current) {
       recognitionRef.current.start();
@@ -119,7 +113,6 @@ const Page = () => {
     }
   };
 
-  // 録音の終了とAPI送信
   const handleEndRecording = async () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -132,7 +125,7 @@ const Page = () => {
       };
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/mentoring/${mentoring_id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/mentoring/${mentoring_id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -159,7 +152,6 @@ const Page = () => {
     }
   };
 
-  // ポップアップを閉じる
   const closePopup = () => setShowPopup(false);
 
   return (
@@ -293,5 +285,11 @@ const Page = () => {
     </div>
   );
 };
+
+const Page = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <PageContent />
+  </Suspense>
+);
 
 export default Page;
