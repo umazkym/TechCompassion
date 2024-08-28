@@ -20,7 +20,7 @@ const MatchingMentee: React.FC = () => {
     useEffect(() => {
         const fetchMentees = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/mentor/1/home');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/mentor/1/home`);
                 const data: MenteeData[] = await response.json();
                 setMentees(data);
             } catch (error) {

@@ -47,7 +47,7 @@ const PageContent = () => {
     if (mentoring_id) {
       const fetchUserInfo = async () => {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/mentoring/${mentoring_id}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/mentoring/${mentoring_id}`);
           const data = await response.json();
           if (data && data.length > 0) {
             const user = data[0];

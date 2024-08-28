@@ -28,7 +28,7 @@ const Page: React.FC = () => {
     useEffect(() => {
         const fetchMentoringSchedules = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/mentor/1/mentoring_schedule');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/mentor/1/mentoring_schedule`);
                 const data: MentoringData[] = await response.json();
                 setMentoringSchedules(data);
             } catch (error) {

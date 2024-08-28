@@ -40,7 +40,7 @@ const Page = () => {
     useEffect(() => {
         const fetchSkillMapData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/1');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/mentor/1/skillmap/1`);
                 const data: SkillMapData[] = await response.json();
                 setSkillMapData(data.reverse());
                 setCurrentPage(0);
@@ -51,7 +51,7 @@ const Page = () => {
 
         const fetchAiSkillMapData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/mentor/1/skillmap/0');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/mentor/1/skillmap/0`);
                 const data: SkillMapData[] = await response.json();
                 setAiSkillMapData(data.reverse());
             } catch (error) {
