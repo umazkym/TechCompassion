@@ -8,7 +8,7 @@ import clsx from 'clsx';
 // ナビゲーション項目の定義
 const navItems = [
     { href: '/mentor/home', title: 'Home', icon: 'material-symbols:home', label: 'Home' },
-    { href: '/mentor/1on1', title: '1on1', icon: 'material-symbols:mic', label: '1on1', disabled: true }, // 1on1ボタンを無効化
+    { href: '/mentor/1on1', title: '1on1', icon: 'material-symbols:mic', label: '1on1', disabled: true },
     { href: '/mentor/score', title: 'Score', icon: 'mdi:chart-bar', label: 'Score' },
     { href: '/mentor/history', title: 'History', icon: 'mdi:history', label: 'History' },
     { href: '/mentor/mentee', title: 'Mentee', icon: 'mdi:account-outline', label: 'Mentee' },

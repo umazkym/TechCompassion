@@ -130,7 +130,7 @@ const Page = () => {
         ],
         datasets: skillMapData.length > 0 ? [
             {
-                label: '主観的FB',
+                label: 'メンティーのFB',
                 data: [
                     skillMapData[currentPage].listening_score, 
                     skillMapData[currentPage].questioning_score, 

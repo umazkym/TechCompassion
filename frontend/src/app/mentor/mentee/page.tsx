@@ -29,7 +29,7 @@ const Page = () => {
       <div className="flex flex-col sm:flex-row bg-white border-gray-400 border-2 rounded-lg p-6 sm:p-10 mb-10">
         <div className="w-full sm:w-1/2 flex items-center mb-6 sm:mb-0">
           <div className="w-1/2 flex flex-col justify-center">
-            <p className="text-2xl sm:text-3xl font-semibold text-center">鈴木美咲</p>
+            <p className="text-2xl sm:text-3xl font-semibold text-center">田中愛</p>
             <p className="text-lg sm:text-xl text-gray-600 text-center">入社1年目</p>
           </div>
           <div className="w-1/2 flex justify-center">
@@ -50,7 +50,7 @@ const Page = () => {
             </div>
             <div className="flex justify-between mb-2">
               <p className="text-gray-700">性別:</p>
-              <p className="font-medium">男性</p>
+              <p className="font-medium">女性</p>
             </div>
             <div className="flex justify-between mb-2">
               <p className="text-gray-700">生年月日:</p>
