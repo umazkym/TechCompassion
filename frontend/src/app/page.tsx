@@ -27,6 +27,7 @@ export default function Home() {
           <p>Age: {item.age}</p>
         </div>
       ))} */}
+      <p>こんにちは</p>
     </div>
   );
 }
