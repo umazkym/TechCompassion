@@ -5,5 +5,8 @@ dotenv.config();
 const nextConfig = {
     env: {
         API_ENDPOINT: process.env.API_ENDPOINT,
-      }
-}
+    },
+    output: 'standalone', // 追加した部分
+};
+
+export default nextConfig;
