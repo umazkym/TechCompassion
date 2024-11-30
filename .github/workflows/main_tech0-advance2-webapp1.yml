@@ -63,6 +63,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'tech0-advance2-webapp1'
-          slot-name: 'Production'
+          slot-name: ''
           package: ./deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D3BA617FC9214031B5EA526DED594E01 }}
